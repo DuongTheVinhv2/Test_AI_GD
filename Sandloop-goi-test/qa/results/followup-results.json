@@ -1,0 +1,199 @@
+[
+  {
+    "name": "layout-360x640",
+    "value": {
+      "pause": {
+        "x": 12,
+        "y": 7,
+        "width": 31.1875,
+        "height": 31.1875,
+        "top": 7,
+        "right": 43.1875,
+        "bottom": 38.1875,
+        "left": 12
+      },
+      "lastRow": [
+        {
+          "id": 13,
+          "y": 640.4084637893798
+        },
+        {
+          "id": 14,
+          "y": 640.4084637893798
+        },
+        {
+          "id": 15,
+          "y": 640.4084637893798
+        },
+        {
+          "id": 16,
+          "y": 640.4084637893798
+        },
+        {
+          "id": 17,
+          "y": 640.4084637893798
+        }
+      ]
+    }
+  },
+  {
+    "name": "layout-844x390",
+    "value": {
+      "pause": {
+        "x": 319.625,
+        "y": 4.65625,
+        "width": 19,
+        "height": 19,
+        "top": 4.65625,
+        "right": 338.625,
+        "bottom": 23.65625,
+        "left": 319.625
+      },
+      "lastRow": [
+        {
+          "id": 13,
+          "y": 390.24890762165325
+        },
+        {
+          "id": 14,
+          "y": 390.24890762165325
+        },
+        {
+          "id": 15,
+          "y": 390.24890762165325
+        },
+        {
+          "id": 16,
+          "y": 390.24890762165325
+        },
+        {
+          "id": 17,
+          "y": 390.24890762165325
+        }
+      ]
+    }
+  },
+  {
+    "name": "layout-1366x768",
+    "value": {
+      "pause": {
+        "x": 481.390625,
+        "y": 8.1875,
+        "width": 37.4375,
+        "height": 37.4375,
+        "top": 8.1875,
+        "right": 518.828125,
+        "bottom": 45.625,
+        "left": 481.390625
+      },
+      "lastRow": [
+        {
+          "id": 13,
+          "y": 768.4901565472557
+        },
+        {
+          "id": 14,
+          "y": 768.4901565472557
+        },
+        {
+          "id": 15,
+          "y": 768.4901565472557
+        },
+        {
+          "id": 16,
+          "y": 768.4901565472557
+        },
+        {
+          "id": 17,
+          "y": 768.4901565472557
+        }
+      ]
+    }
+  },
+  {
+    "name": "memory-same-level",
+    "value": {
+      "before": {
+        "geometries": 46,
+        "textures": 152
+      },
+      "after": {
+        "geometries": 46,
+        "textures": 482
+      }
+    }
+  },
+  {
+    "name": "pause-resume-levels",
+    "value": {
+      "paused": {
+        "mode": "paused",
+        "t": 0
+      },
+      "levels": {
+        "mode": "levels",
+        "locked": 9
+      },
+      "back": "paused",
+      "resumed": "playing"
+    }
+  },
+  {
+    "name": "real-level1-play-win-next",
+    "value": {
+      "won": {
+        "taps": 5,
+        "status": "won",
+        "coins": 35,
+        "unlocked": 2
+      },
+      "next": {
+        "mode": "playing",
+        "level": 2
+      }
+    }
+  },
+  {
+    "name": "natural-loss-and-after-loss-movement",
+    "value": {
+      "before": {
+        "status": "lost",
+        "t": 1.8999999999999932,
+        "sand": 16384
+      },
+      "after": {
+        "t": 11.8999999999997,
+        "sand": 16384
+      },
+      "mode": "lost",
+      "why": "The belt is full and none of its buckets match the sand along the bottom edge."
+    }
+  },
+  {
+    "name": "pause-before-result-restart",
+    "value": {
+      "paused": {
+        "mode": "paused",
+        "pending": "win"
+      },
+      "pending": null,
+      "wins": 2,
+      "coins": 35,
+      "unlocked": 2
+    }
+  },
+  {
+    "name": "marks-not-applied-to-belt",
+    "value": {
+      "board": 0,
+      "belt": 0.55
+    }
+  },
+  {
+    "name": "continue-after-final",
+    "value": {
+      "label": "Continue",
+      "level": 1
+    }
+  }
+]

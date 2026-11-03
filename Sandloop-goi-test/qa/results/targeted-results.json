@@ -1,0 +1,10 @@
+[
+  "blocked bucket leaves board/belt unchanged",
+  "rapid taps enforce capacity and reject duplicate",
+  "mystery stays hidden until adjacent floor is empty",
+  "hole blocks board path",
+  "sand respects real four-grain layer and reaches through stray",
+  "win emitted once and taps rejected after win",
+  "loss emitted once and taps rejected after loss",
+  "clone evolves same game state"
+]

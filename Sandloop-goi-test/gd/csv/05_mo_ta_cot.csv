@@ -1,0 +1,61 @@
+﻿Bảng,Cột,Đơn vị,Ý nghĩa
+01 Tổng hợp theo màn,Màn,,"Số thứ tự màn, từ 1 đến 10. Dòng cuối ""Tất cả"" là dòng tổng hợp."
+01 Tổng hợp theo màn,Tên màn,,Tên bức tranh của màn.
+01 Tổng hợp theo màn,Người vào màn,người,Số người chơi bắt đầu ít nhất một lượt ở màn này.
+01 Tổng hợp theo màn,Lượt chơi,lượt,"Tổng số lượt chơi ở màn, gồm lượt thắng và lượt thua."
+01 Tổng hợp theo màn,Lượt thắng,lượt,Số lượt kết thúc bằng thắng. Mỗi người chỉ qua một màn một lần nên con số này bằng số người qua màn.
+01 Tổng hợp theo màn,Tỉ lệ thắng (%),% (0-100),"Lượt thắng chia cho lượt chơi, nhân 100."
+01 Tổng hợp theo màn,Tỉ lệ qua màn (%),% (0-100),"Số người qua màn chia cho số người vào màn, nhân 100."
+01 Tổng hợp theo màn,Số lượt TB của người qua màn,lượt,"Tổng số lượt của những người đã qua màn, chia cho số người qua màn."
+01 Tổng hợp theo màn,Thời gian TB mỗi lượt (giây),giây,Tổng thời gian chơi ở màn chia cho số lượt chơi.
+01 Tổng hợp theo màn,Thời gian TB lượt thắng (giây),giây,Thời gian trung bình của các lượt thắng.
+01 Tổng hợp theo màn,Người bỏ chơi tại màn,người,Số người dừng hẳn sau một lượt thua và không chơi tiếp.
+01 Tổng hợp theo màn,Tỉ lệ bỏ chơi (%),% (0-100),"Người bỏ chơi tại màn chia cho người vào màn, nhân 100."
+01 Tổng hợp theo màn,Người rời sau khi qua màn,người,Số người đã qua màn nhưng không vào màn kế tiếp (thoát game). Người vào màn kế tiếp = người qua màn trừ cột này.
+01 Tổng hợp theo màn,Thắng ngay lần đầu (%),% (0-100),"Số người qua màn ngay ở lượt đầu tiên, chia cho người vào màn, nhân 100."
+01 Tổng hợp theo màn,Xu đã trả,xu,"Tổng xu thưởng đã trả ở màn: 25 xu cho lần qua đầu tiên, thêm 10 xu nếu qua ngay ở lượt đầu tiên."
+01 Tổng hợp theo màn,Xu trả TB mỗi người vào màn,xu,Xu đã trả chia cho người vào màn.
+01 Tổng hợp theo màn,Xu đã tiêu,xu,Tổng xu người chơi đã chi ở màn này.
+02 Hiệu suất theo nhóm,Màn,,Số thứ tự màn.
+02 Hiệu suất theo nhóm,Nhóm kỹ năng,,"Kiểu người chơi do bot mô phỏng. Ngẫu nhiên: bấm bất kỳ xô nào bấm được. Phổ thông: chọn xô bấm được có màu đang nằm trên sàn cát, không có thì bấm đại. Cẩn thận: như Phổ thông nhưng khi phải đào thì nhìn trước một nước, luôn chừa một ô trên băng chuyền, nghĩ 0,6-1,4 giây mỗi lần bấm và bấm trượt 4% số lần. Lập kế hoạch: nhắm tới xô rẻ nhất có màu đang nằm trên sàn và chỉ đào khi băng chuyền còn đủ chỗ, trượt 2%."
+02 Hiệu suất theo nhóm,Số lượt mô phỏng,lượt,Số lượt bot đã chạy cho ô này.
+02 Hiệu suất theo nhóm,Tỉ lệ thắng (0-1),0-1,Số lượt thắng chia cho số lượt mô phỏng.
+02 Hiệu suất theo nhóm,Số lần thử kỳ vọng (tối đa 50),lần,"1 chia cho tỉ lệ thắng, chặn ở 50 (tỉ lệ thắng dưới 2% được tính như 2%)."
+02 Hiệu suất theo nhóm,Thời gian TB lượt thắng (giây),giây,Thời gian trung bình của các lượt thắng. Để trống khi không có lượt thắng nào.
+02 Hiệu suất theo nhóm,Thời gian TB mọi lượt (giây),giây,"Thời gian trung bình của mọi lượt, thắng và thua. Mỗi lượt mô phỏng kết thúc khi thắng, khi băng chuyền kẹt hoặc sau 240 giây."
+02 Hiệu suất theo nhóm,Số lần bấm TB mỗi lượt,lần,Số lần bấm xô trung bình trong một lượt.
+02 Hiệu suất theo nhóm,Thua do kẹt băng chuyền (0-1),0-1,"Trong các lượt thua, tỉ lệ kết thúc vì băng chuyền kẹt (phần còn lại hết giờ). Để trống khi không có lượt thua."
+02 Hiệu suất theo nhóm,Cát còn lại khi thua (0-1),0-1,"Trong các lượt thua, tỉ lệ cát trung bình còn trong khung lúc kết thúc. Để trống khi không có lượt thua."
+02 Hiệu suất theo nhóm,Suýt thắng (0-1),0-1,"Trong các lượt thua, tỉ lệ kết thúc khi còn dưới một phần năm số cát. Để trống khi không có lượt thua."
+02 Hiệu suất theo nhóm,Số ô băng chuyền dùng nhiều nhất,ô,"Số ô băng chuyền có xô cùng lúc nhiều nhất, trung bình các lượt."
+02 Hiệu suất theo nhóm,Thời gian băng chuyền đầy (giây),giây,"Số giây mọi ô băng chuyền đều có xô, trung bình các lượt."
+02 Hiệu suất theo nhóm,Thời gian băng chuyền chạy không (giây),giây,"Số giây không xô nào trên băng chuyền hút được cát, trung bình các lượt."
+03 Tiến trình theo nhóm,Màn,,Số thứ tự màn.
+03 Tiến trình theo nhóm,Nhóm kỹ năng,,Như bảng 02.
+03 Tiến trình theo nhóm,Người vào màn,người,Số người của nhóm bắt đầu ít nhất một lượt ở màn này.
+03 Tiến trình theo nhóm,Lượt chơi,lượt,"Tổng số lượt chơi của nhóm ở màn, thắng và thua."
+03 Tiến trình theo nhóm,Người qua màn,người,Số người của nhóm qua được màn.
+03 Tiến trình theo nhóm,Người qua ngay lượt đầu,người,Số người của nhóm qua màn ngay ở lượt đầu tiên.
+03 Tiến trình theo nhóm,Người bỏ chơi tại màn,người,Số người của nhóm dừng hẳn sau một lượt thua.
+03 Tiến trình theo nhóm,Người rời sau khi qua màn,người,Số người của nhóm qua màn rồi thoát game.
+03 Tiến trình theo nhóm,Tổng lượt của người qua màn,lượt,Tổng số lượt (gồm cả lượt thua trước đó) của những người của nhóm đã qua màn.
+03 Tiến trình theo nhóm,Tổng thời gian chơi (giờ),giờ,"Tổng thời gian của mọi lượt chơi của nhóm ở màn, tính bằng giờ."
+04 Cấu trúc màn,Màn,,Số thứ tự màn.
+04 Cấu trúc màn,Tên màn,,Tên bức tranh của màn.
+04 Cấu trúc màn,Số xô,xô,Tổng số xô màn đưa cho người chơi. Các xô cùng màu chia đều đúng số cát của màu đó nên xô nào cũng đầy hoàn toàn.
+04 Cấu trúc màn,Xô bí ẩn,xô,Xô giấu màu cho tới khi một ô bên cạnh trống.
+04 Cấu trúc màn,Số màu cát,màu,Số màu cát khác nhau trong bức tranh.
+04 Cấu trúc màn,Số ô sàn,ô,Số ô đi được trên bảng xô.
+04 Cấu trúc màn,Số ô lỗ,ô,Số ô không thể băng qua trên bảng xô.
+04 Cấu trúc màn,Số ô băng chuyền,ô,Số xô tối đa nằm trên băng chuyền cùng lúc.
+04 Cấu trúc màn,Xô cổ chai,xô,Xô chắn đường của ít nhất ba xô khác.
+04 Cấu trúc màn,Độ sâu đào tới màu cần đầu tiên,xô,Số xô phải rời đi trước khi bấm được xô đầu tiên mà cát đang cần. 0 nghĩa là đã bấm được ngay.
+04 Cấu trúc màn,Xô nằm sâu nhất,xô,Số xô nhiều nhất đứng giữa một xô bất kỳ và hàng lối ra.
+04 Cấu trúc màn,Độ sâu trung bình,xô,Số xô trung bình đứng giữa một xô và hàng lối ra.
+04 Cấu trúc màn,Bấm được ngay từ đầu,xô,Số xô bấm được trước khi có bất cứ điều gì xảy ra.
+04 Cấu trúc màn,Bấm được và đang cần,xô,"Trong số xô bấm được từ đầu, số xô có màu đang nằm trên sàn cát."
+04 Cấu trúc màn,Lần bấm đầu đúng (0-1),0-1,Xác suất một lần bấm mù vào xô bấm được là lần bấm có ích.
+04 Cấu trúc màn,Số xô cùng màu với cát lộ ra đầu tiên,xô,Số xô có cùng màu với màu cát đang nằm trên sàn lúc bắt đầu.
+04 Cấu trúc màn,Xô nhỏ nhất (hạt),hạt,Số hạt cát của xô nhỏ nhất.
+04 Cấu trúc màn,Xô lớn nhất (hạt),hạt,Số hạt cát của xô lớn nhất.
+04 Cấu trúc màn,Tổng số hạt cát,hạt,Tổng số hạt cát của bức tranh.

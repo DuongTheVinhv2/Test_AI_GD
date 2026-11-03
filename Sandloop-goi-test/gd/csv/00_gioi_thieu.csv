@@ -1,0 +1,8 @@
+﻿Mục,Nội dung
+Nguồn dữ liệu,"Dữ liệu mô phỏng bằng máy, không phải từ người chơi thật. Hiệu suất theo nhóm kỹ năng (bảng 02) đo bằng bot chơi trên đúng luật của game. Cấu trúc từng màn (bảng 04) tính từ bàn cờ của màn. Số người chơi, cách họ bỏ cuộc và rời game (bảng 01 và 03) là giả định của mô hình."
+Bối cảnh,"Game xếp xô hút cát, 10 màn. Tranh pixel làm bằng cát rơi xuống một băng chuyền có số ô giới hạn. Xô trên băng chuyền chỉ hút cát đúng màu của nó. Các xô nằm trên bảng bên dưới: chỉ bấm được một xô khi có đường ô trống từ nó lên hàng trên cùng, xô bị chắn phải chờ các xô chắn đi ra trước. Thua khi băng chuyền kẹt. Game không có booster và không có hướng dẫn."
+Các bảng,01 Tổng hợp theo màn. 02 Hiệu suất theo nhóm kỹ năng. 03 Tiến trình người chơi theo nhóm kỹ năng. 04 Cấu trúc từng màn. 05 Mô tả cột.
+"Dòng ""Tất cả""","Ở bảng 01, dòng cuối: các cột đếm (người, lượt, xu) là tổng của 10 dòng trên; các cột tỉ lệ và thời gian là trung bình cộng của 10 dòng trên."
+Ô trống,Ô trống nghĩa là không có gì để tính (ví dụ không có lượt thắng nào nên không có thời gian thắng). Ô trống khác số 0.
+Đơn vị,"Đơn vị nằm trong tên cột hoặc ở bảng 05. Các bảng không dùng chung một cách viết: có bảng ghi phần trăm từ 0 đến 100, có bảng ghi tỉ lệ từ 0 đến 1; thời gian có chỗ tính bằng giây, có chỗ bằng giờ."
+Ngày tạo,2/11/2026
