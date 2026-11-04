@@ -15,26 +15,45 @@ export class BoardView {
     this.rows = board.rows;
     const cell = BOARD.cell;
 
-    // The slab runs the full width and well below the screen.
-    const slabH = 16;
-    const slab = new THREE.Mesh(new RoundedBoxGeometry(STAGE.w + 14, slabH, 0.7, 4, 0.3), mats.slate);
-    slab.position.set(0, BOARD.top - slabH / 2 + 0.05, -0.35);
-    slab.receiveShadow = true;
-    slab.castShadow = true;
-    this.group.add(slab);
+    // Blue shoulders and a recessed tray make the tile field read as one molded piece.
+    const trayWidth = board.cols * cell + 0.12;
+    const trayHeight = board.rows * cell + 0.12;
+    const apronTop = BOARD.top + 0.78;
+    const trayBottom = BOARD.top - trayHeight;
+    const sideWidth = Math.max(0.7, (STAGE.w - trayWidth) / 2 + 0.12);
+    const shoulderHeight = apronTop - trayBottom;
+    const shoulder = new RoundedBoxGeometry(sideWidth, shoulderHeight + 0.2, 0.64, 3, 0.15);
+    for (const side of [-1, 1]) {
+      const wall = new THREE.Mesh(shoulder, mats.slate);
+      wall.position.set(side * (trayWidth + sideWidth) / 2, apronTop - shoulderHeight / 2, 0.03);
+      wall.receiveShadow = true;
+      this.group.add(wall);
+    }
+    const bottom = new THREE.Mesh(
+      new RoundedBoxGeometry(trayWidth + sideWidth * 2, 14, 0.64, 3, 0.15), mats.slate,
+    );
+    bottom.position.set(0, trayBottom - 7, 0.03);
+    this.group.add(bottom);
 
-    const tileGeo = new RoundedBoxGeometry(cell - 0.1, cell - 0.1, 0.16, 3, 0.08);
-    const edgeGeo = new RoundedBoxGeometry(cell + 0.02, cell + 0.02, 0.12, 3, 0.1);
-    const holeGeo = new RoundedBoxGeometry(cell - 0.14, cell - 0.14, 0.1, 3, 0.1);
-    const ledgeGeo = new RoundedBoxGeometry(cell - 0.14, 0.34, 0.16, 3, 0.08);
+    const well = new THREE.Mesh(
+      new RoundedBoxGeometry(trayWidth + 0.1, trayHeight, 0.28, 3, 0.1), mats.frameInner,
+    );
+    well.position.set(0, BOARD.top - trayHeight / 2, -0.31);
+    well.receiveShadow = true;
+    this.group.add(well);
+
+    const tileGeo = new RoundedBoxGeometry(cell - 0.23, cell - 0.20, 0.19, 4, 0.095);
+    const edgeGeo = new RoundedBoxGeometry(cell - 0.21, cell - 0.18, 0.16, 3, 0.08);
+    const wallGeo = new RoundedBoxGeometry(cell - 0.10, cell - 0.08, 0.84, 4, 0.13);
+    // The outward face is blue, while the sides show the depth of the obstacle.
+    const wallMats = [mats.hole, mats.hole, mats.slate, mats.hole, mats.slate, mats.hole];
     for (let r = 0; r < board.rows; r++) {
       for (let c = 0; c < board.cols; c++) {
         const t = board.tile(r, c);
-        if (t === Tile.Void) continue;
         const x = BOARD.colX(c, board.cols);
         const y = BOARD.rowY(r);
         if (t === Tile.Floor) {
-          const edge = new THREE.Mesh(edgeGeo, mats.white);
+          const edge = new THREE.Mesh(edgeGeo, mats.frameInner);
           edge.position.set(x, y, 0.0);
           edge.receiveShadow = true;
           const tile = new THREE.Mesh(tileGeo, mats.tile);
@@ -42,13 +61,11 @@ export class BoardView {
           tile.receiveShadow = true;
           this.group.add(edge, tile);
         } else {
-          const edge = new THREE.Mesh(edgeGeo, mats.white);
-          edge.position.set(x, y, 0.0);
-          const hole = new THREE.Mesh(holeGeo, mats.hole);
-          hole.position.set(x, y, 0.1);
-          const ledge = new THREE.Mesh(ledgeGeo, mats.tile);
-          ledge.position.set(x, y - cell / 2 + 0.26, 0.15);
-          this.group.add(edge, hole, ledge);
+          const wall = new THREE.Mesh(wallGeo, wallMats);
+          wall.position.set(x, y, 0.38);
+          wall.castShadow = true;
+          wall.receiveShadow = true;
+          this.group.add(wall);
         }
       }
     }

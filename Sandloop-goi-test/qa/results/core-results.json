@@ -59,9 +59,11 @@
     "conserved": true,
     "total": 16384,
     "open": [
+      0,
       1,
       2,
-      3
+      3,
+      4
     ]
   },
   {
@@ -139,7 +141,7 @@
       {
         "seed": 1,
         "status": "won",
-        "time": 21.16,
+        "time": 17.35,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -147,7 +149,7 @@
       {
         "seed": 2,
         "status": "won",
-        "time": 18.13,
+        "time": 14.02,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -155,7 +157,7 @@
       {
         "seed": 3,
         "status": "won",
-        "time": 21.4,
+        "time": 17.17,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -163,7 +165,7 @@
       {
         "seed": 4,
         "status": "won",
-        "time": 17.34,
+        "time": 15.51,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -171,7 +173,7 @@
       {
         "seed": 5,
         "status": "won",
-        "time": 18.78,
+        "time": 15.55,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -179,7 +181,7 @@
       {
         "seed": 6,
         "status": "won",
-        "time": 21.37,
+        "time": 17.14,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -187,7 +189,7 @@
       {
         "seed": 7,
         "status": "won",
-        "time": 17.46,
+        "time": 13.94,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -195,7 +197,7 @@
       {
         "seed": 8,
         "status": "won",
-        "time": 18.41,
+        "time": 16.83,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -203,7 +205,7 @@
       {
         "seed": 9,
         "status": "won",
-        "time": 17.01,
+        "time": 15.59,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -211,7 +213,7 @@
       {
         "seed": 10,
         "status": "won",
-        "time": 21.43,
+        "time": 17.4,
         "sand": 0,
         "taps": 5,
         "invariant": true
@@ -229,7 +231,7 @@
       {
         "seed": 1,
         "status": "won",
-        "time": 41.27,
+        "time": 33.69,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -237,7 +239,7 @@
       {
         "seed": 2,
         "status": "won",
-        "time": 33.83,
+        "time": 34.54,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -245,7 +247,7 @@
       {
         "seed": 3,
         "status": "won",
-        "time": 30.76,
+        "time": 28.28,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -253,7 +255,7 @@
       {
         "seed": 4,
         "status": "won",
-        "time": 31.76,
+        "time": 30.61,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -261,7 +263,7 @@
       {
         "seed": 5,
         "status": "won",
-        "time": 39.23,
+        "time": 31.33,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -269,29 +271,13 @@
       {
         "seed": 6,
         "status": "won",
-        "time": 33.86,
+        "time": 31.25,
         "sand": 0,
         "taps": 9,
         "invariant": true
       },
       {
         "seed": 7,
-        "status": "won",
-        "time": 33.68,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 36.07,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 9,
         "status": "won",
         "time": 29.21,
         "sand": 0,
@@ -299,9 +285,25 @@
         "invariant": true
       },
       {
+        "seed": 8,
+        "status": "won",
+        "time": 33.69,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 33.43,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
         "seed": 10,
         "status": "won",
-        "time": 35.1,
+        "time": 33.51,
         "sand": 0,
         "taps": 9,
         "invariant": true
@@ -319,7 +321,7 @@
       {
         "seed": 1,
         "status": "won",
-        "time": 33.23,
+        "time": 28.98,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -327,7 +329,7 @@
       {
         "seed": 2,
         "status": "won",
-        "time": 31.63,
+        "time": 25.18,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -335,7 +337,7 @@
       {
         "seed": 3,
         "status": "won",
-        "time": 30.33,
+        "time": 26.33,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -343,7 +345,7 @@
       {
         "seed": 4,
         "status": "won",
-        "time": 32.97,
+        "time": 25.47,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -351,7 +353,7 @@
       {
         "seed": 5,
         "status": "won",
-        "time": 33.92,
+        "time": 25.62,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -359,7 +361,7 @@
       {
         "seed": 6,
         "status": "won",
-        "time": 32.24,
+        "time": 28.39,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -367,7 +369,7 @@
       {
         "seed": 7,
         "status": "won",
-        "time": 42.95,
+        "time": 36.34,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -375,7 +377,7 @@
       {
         "seed": 8,
         "status": "won",
-        "time": 34.43,
+        "time": 26.39,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -383,7 +385,7 @@
       {
         "seed": 9,
         "status": "won",
-        "time": 40.35,
+        "time": 32.48,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -391,7 +393,7 @@
       {
         "seed": 10,
         "status": "won",
-        "time": 40.89,
+        "time": 30.88,
         "sand": 0,
         "taps": 12,
         "invariant": true
@@ -402,88 +404,88 @@
     "kind": "simulation",
     "policy": "random",
     "level": 4,
-    "wins": 0,
-    "losses": 10,
+    "wins": 2,
+    "losses": 8,
     "timeouts": 0,
     "samples": [
       {
         "seed": 1,
         "status": "lost",
-        "time": 12.8,
-        "sand": 14420,
-        "taps": 6,
+        "time": 12.4,
+        "sand": 13324,
+        "taps": 7,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "lost",
-        "time": 61.7,
-        "sand": 4679,
-        "taps": 13,
+        "status": "won",
+        "time": 49.15,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 3,
         "status": "lost",
-        "time": 48.1,
-        "sand": 7947,
-        "taps": 11,
+        "time": 31.4,
+        "sand": 9946,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 4,
         "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
+        "time": 25.1,
+        "sand": 10460,
+        "taps": 9,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "lost",
-        "time": 9,
-        "sand": 15012,
-        "taps": 6,
+        "time": 75.7,
+        "sand": 8002,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "lost",
-        "time": 16,
-        "sand": 12936,
-        "taps": 7,
+        "time": 27.2,
+        "sand": 10244,
+        "taps": 9,
         "invariant": true
       },
       {
         "seed": 7,
         "status": "lost",
-        "time": 10.2,
-        "sand": 13640,
-        "taps": 7,
+        "time": 71.5,
+        "sand": 6124,
+        "taps": 12,
         "invariant": true
       },
       {
         "seed": 8,
         "status": "lost",
-        "time": 95.5,
-        "sand": 5169,
-        "taps": 13,
+        "time": 29.2,
+        "sand": 8516,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 9,
         "status": "lost",
-        "time": 15.5,
-        "sand": 13640,
-        "taps": 7,
+        "time": 46.6,
+        "sand": 9984,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 10,
-        "status": "lost",
-        "time": 72.2,
-        "sand": 5241,
-        "taps": 12,
+        "status": "won",
+        "time": 46.89,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       }
     ]
@@ -492,1716 +494,6 @@
     "kind": "simulation",
     "policy": "random",
     "level": 5,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "random",
-    "level": 6,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 7.7,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 7.7,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 8.7,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "random",
-    "level": 7,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "random",
-    "level": 8,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 22.6,
-        "sand": 14146,
-        "taps": 6,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "random",
-    "level": 9,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "random",
-    "level": 10,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 1,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 17.34,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 17.43,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 17.52,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 17.34,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 17.43,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 17.1,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 17.46,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 17.76,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 17.01,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 17.61,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 2,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 33.74,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 32.27,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 36.19,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 32,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 36.13,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 36.19,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 3,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 31.78,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 31.63,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 34.64,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 35.34,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 34.13,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 32.85,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 31.75,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 34.43,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 28.74,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 35.13,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 4,
-    "wins": 4,
-    "losses": 6,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 54.15,
-        "sand": 0,
-        "taps": 16,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 69.1,
-        "sand": 4962,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 47.1,
-        "sand": 6684,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 56.79,
-        "sand": 0,
-        "taps": 16,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 76.9,
-        "sand": 4617,
-        "taps": 13,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 53.62,
-        "sand": 0,
-        "taps": 16,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 75.6,
-        "sand": 5019,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 60.37,
-        "sand": 0,
-        "taps": 16,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 47.9,
-        "sand": 5710,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 36.4,
-        "sand": 5299,
-        "taps": 13,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 5,
-    "wins": 1,
-    "losses": 9,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 80.2,
-        "sand": 0,
-        "taps": 19,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 6,
-    "wins": 1,
-    "losses": 9,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 6.6,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 53.46,
-        "sand": 0,
-        "taps": 16,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 57.6,
-        "sand": 5553,
-        "taps": 12,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 7,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 8,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 23.2,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 16.8,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 9,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "exposed",
-    "level": 10,
-    "wins": 0,
-    "losses": 10,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "lost",
-        "time": 4.3,
-        "sand": 16384,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "lookahead",
-    "level": 1,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 17.34,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 17.43,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 17.52,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 17.34,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 17.43,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 17.1,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 17.46,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 17.76,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 17.01,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 17.61,
-        "sand": 0,
-        "taps": 5,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "lookahead",
-    "level": 2,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 33.74,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 32.27,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 36.17,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 36.19,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 32,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 36.13,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 36.19,
-        "sand": 0,
-        "taps": 9,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "lookahead",
-    "level": 3,
-    "wins": 10,
-    "losses": 0,
-    "timeouts": 0,
-    "samples": [
-      {
-        "seed": 1,
-        "status": "won",
-        "time": 31.78,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 2,
-        "status": "won",
-        "time": 31.63,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 3,
-        "status": "won",
-        "time": 34.64,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 4,
-        "status": "won",
-        "time": 35.34,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 5,
-        "status": "won",
-        "time": 34.13,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 6,
-        "status": "won",
-        "time": 32.85,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "won",
-        "time": 31.75,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 8,
-        "status": "won",
-        "time": 34.43,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 9,
-        "status": "won",
-        "time": 28.74,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      },
-      {
-        "seed": 10,
-        "status": "won",
-        "time": 35.13,
-        "sand": 0,
-        "taps": 12,
-        "invariant": true
-      }
-    ]
-  },
-  {
-    "kind": "simulation",
-    "policy": "lookahead",
-    "level": 4,
     "wins": 3,
     "losses": 7,
     "timeouts": 0,
@@ -2209,63 +501,873 @@
       {
         "seed": 1,
         "status": "lost",
-        "time": 32.3,
-        "sand": 9064,
-        "taps": 8,
+        "time": 28.8,
+        "sand": 9401,
+        "taps": 11,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "lost",
-        "time": 47.9,
-        "sand": 8015,
-        "taps": 10,
+        "status": "won",
+        "time": 98.63,
+        "sand": 0,
+        "taps": 19,
         "invariant": true
       },
       {
         "seed": 3,
-        "status": "lost",
-        "time": 46,
-        "sand": 6652,
-        "taps": 12,
+        "status": "won",
+        "time": 71.67,
+        "sand": 0,
+        "taps": 19,
         "invariant": true
       },
       {
         "seed": 4,
         "status": "lost",
-        "time": 44.9,
-        "sand": 6083,
-        "taps": 11,
+        "time": 34.2,
+        "sand": 10583,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "lost",
-        "time": 27.3,
-        "sand": 9060,
+        "time": 88.7,
+        "sand": 7733,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 66.8,
+        "sand": 8149,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 71.68,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 40.5,
+        "sand": 9405,
+        "taps": 11,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 75,
+        "sand": 7707,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 74.7,
+        "sand": 6571,
+        "taps": 14,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "random",
+    "level": 6,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 38.7,
+        "sand": 7104,
+        "taps": 11,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 22.8,
+        "sand": 13066,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 12.6,
+        "sand": 13066,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 21.7,
+        "sand": 13066,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 33.9,
+        "sand": 11407,
         "taps": 8,
         "invariant": true
       },
       {
         "seed": 6,
-        "status": "won",
-        "time": 49.45,
-        "sand": 0,
-        "taps": 16,
+        "status": "lost",
+        "time": 8.8,
+        "sand": 14725,
+        "taps": 6,
         "invariant": true
       },
       {
         "seed": 7,
         "status": "lost",
-        "time": 75.6,
-        "sand": 5019,
+        "time": 7,
+        "sand": 14725,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 41.9,
+        "sand": 10232,
+        "taps": 8,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 19.8,
+        "sand": 13066,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 11.8,
+        "sand": 13066,
+        "taps": 7,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "random",
+    "level": 7,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "random",
+    "level": 8,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 8.1,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "random",
+    "level": 9,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "random",
+    "level": 10,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 1,
+    "wins": 10,
+    "losses": 0,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 14.97,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 15.69,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 15.02,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 15.51,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 15.61,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 15.24,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 13.94,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "won",
+        "time": 15.53,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 15.59,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 15.24,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 2,
+    "wins": 7,
+    "losses": 3,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 31.41,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 29.37,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 28.28,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 28.39,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 30.37,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 29.47,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 31.49,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 30.9,
+        "sand": 4301,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 27.9,
+        "sand": 4336,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 25.5,
+        "sand": 4362,
+        "taps": 7,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 3,
+    "wins": 10,
+    "losses": 0,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 23.75,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 29.39,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 30.83,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 27.81,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 29.28,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 26.44,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 24.75,
+        "sand": 0,
         "taps": 12,
         "invariant": true
       },
       {
         "seed": 8,
         "status": "won",
-        "time": 60.37,
+        "time": 24.71,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 23.68,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 23.69,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 4,
+    "wins": 8,
+    "losses": 2,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 37.72,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 28.4,
+        "sand": 6629,
+        "taps": 11,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 49.53,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 49.92,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 40.19,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 37.84,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 38.58,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "won",
+        "time": 43.11,
         "sand": 0,
         "taps": 16,
         "invariant": true
@@ -2273,15 +1375,915 @@
       {
         "seed": 9,
         "status": "lost",
-        "time": 47.9,
-        "sand": 5710,
+        "time": 29.9,
+        "sand": 6168,
         "taps": 12,
         "invariant": true
       },
       {
         "seed": 10,
         "status": "won",
-        "time": 60.99,
+        "time": 39.55,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 5,
+    "wins": 5,
+    "losses": 5,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 46.8,
+        "sand": 5845,
+        "taps": 15,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 52.6,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 54.63,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 49.2,
+        "sand": 7739,
+        "taps": 11,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 50.9,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 45.86,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 25.9,
+        "sand": 8375,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 36.2,
+        "sand": 5812,
+        "taps": 15,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 55.91,
+        "sand": 0,
+        "taps": 19,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 61.7,
+        "sand": 6521,
+        "taps": 14,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 6,
+    "wins": 6,
+    "losses": 4,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 53.17,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 46.04,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 37.5,
+        "sand": 5798,
+        "taps": 13,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 36.43,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 45.24,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 49,
+        "sand": 5868,
+        "taps": 13,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 39.3,
+        "sand": 6018,
+        "taps": 13,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 34.4,
+        "sand": 5806,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 66.25,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 55.34,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 7,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 8,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 9.2,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 8.1,
+        "sand": 15122,
+        "taps": 6,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 9,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "exposed",
+    "level": 10,
+    "wins": 0,
+    "losses": 10,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 6,
+        "sand": 16384,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "lookahead",
+    "level": 1,
+    "wins": 10,
+    "losses": 0,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 14.97,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 15.69,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 15.02,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 15.51,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 15.61,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 15.24,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 13.94,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "won",
+        "time": 15.53,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 15.59,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 15.24,
+        "sand": 0,
+        "taps": 5,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "lookahead",
+    "level": 2,
+    "wins": 7,
+    "losses": 3,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 31.41,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 29.37,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 28.28,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 28.39,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 30.37,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 29.47,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 31.49,
+        "sand": 0,
+        "taps": 9,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "lost",
+        "time": 30.9,
+        "sand": 4301,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 27.9,
+        "sand": 4336,
+        "taps": 7,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "lost",
+        "time": 25.5,
+        "sand": 4362,
+        "taps": 7,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "lookahead",
+    "level": 3,
+    "wins": 10,
+    "losses": 0,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 23.75,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "won",
+        "time": 23.72,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 25.36,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 24.63,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 24.74,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 24.66,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 24.75,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "won",
+        "time": 24.71,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "won",
+        "time": 23.68,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 23.69,
+        "sand": 0,
+        "taps": 12,
+        "invariant": true
+      }
+    ]
+  },
+  {
+    "kind": "simulation",
+    "policy": "lookahead",
+    "level": 4,
+    "wins": 8,
+    "losses": 2,
+    "timeouts": 0,
+    "samples": [
+      {
+        "seed": 1,
+        "status": "won",
+        "time": 37.72,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 2,
+        "status": "lost",
+        "time": 28.4,
+        "sand": 6629,
+        "taps": 11,
+        "invariant": true
+      },
+      {
+        "seed": 3,
+        "status": "won",
+        "time": 49.53,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 4,
+        "status": "won",
+        "time": 49.92,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 5,
+        "status": "won",
+        "time": 40.19,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 6,
+        "status": "won",
+        "time": 37.84,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 7,
+        "status": "won",
+        "time": 38.58,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 8,
+        "status": "won",
+        "time": 43.11,
+        "sand": 0,
+        "taps": 16,
+        "invariant": true
+      },
+      {
+        "seed": 9,
+        "status": "lost",
+        "time": 29.9,
+        "sand": 6168,
+        "taps": 12,
+        "invariant": true
+      },
+      {
+        "seed": 10,
+        "status": "won",
+        "time": 39.55,
         "sand": 0,
         "taps": 16,
         "invariant": true
@@ -2292,88 +2294,88 @@
     "kind": "simulation",
     "policy": "lookahead",
     "level": 5,
-    "wins": 8,
-    "losses": 2,
+    "wins": 3,
+    "losses": 7,
     "timeouts": 0,
     "samples": [
       {
         "seed": 1,
-        "status": "won",
-        "time": 68.37,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 59.7,
+        "sand": 7753,
+        "taps": 11,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "won",
-        "time": 64.53,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 67,
+        "sand": 3963,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 3,
         "status": "lost",
-        "time": 38.2,
-        "sand": 8220,
-        "taps": 12,
+        "time": 38.4,
+        "sand": 6149,
+        "taps": 14,
         "invariant": true
       },
       {
         "seed": 4,
-        "status": "won",
-        "time": 62.8,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 33.1,
+        "sand": 7743,
+        "taps": 11,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "won",
-        "time": 84.53,
+        "time": 51.41,
         "sand": 0,
         "taps": 19,
         "invariant": true
       },
       {
         "seed": 6,
-        "status": "won",
-        "time": 85.85,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 73.8,
+        "sand": 3699,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 7,
         "status": "won",
-        "time": 52.83,
+        "time": 73.01,
         "sand": 0,
         "taps": 19,
         "invariant": true
       },
       {
         "seed": 8,
-        "status": "won",
-        "time": 65.61,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 36.2,
+        "sand": 5812,
+        "taps": 15,
         "invariant": true
       },
       {
         "seed": 9,
-        "status": "won",
-        "time": 52.98,
-        "sand": 0,
-        "taps": 19,
+        "status": "lost",
+        "time": 63,
+        "sand": 1504,
+        "taps": 18,
         "invariant": true
       },
       {
         "seed": 10,
-        "status": "lost",
-        "time": 118.2,
-        "sand": 1007,
-        "taps": 18,
+        "status": "won",
+        "time": 45.19,
+        "sand": 0,
+        "taps": 19,
         "invariant": true
       }
     ]
@@ -2382,88 +2384,88 @@
     "kind": "simulation",
     "policy": "lookahead",
     "level": 6,
-    "wins": 0,
-    "losses": 10,
+    "wins": 6,
+    "losses": 4,
     "timeouts": 0,
     "samples": [
       {
         "seed": 1,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 37.61,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 46.04,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 3,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 48.96,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 4,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 36.43,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "time": 36.4,
+        "sand": 6097,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "time": 57.4,
+        "sand": 5792,
+        "taps": 13,
         "invariant": true
       },
       {
         "seed": 7,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 39.58,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 8,
-        "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "status": "won",
+        "time": 36.16,
+        "sand": 0,
+        "taps": 16,
         "invariant": true
       },
       {
         "seed": 9,
         "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "time": 72.6,
+        "sand": 6237,
+        "taps": 12,
         "invariant": true
       },
       {
         "seed": 10,
         "status": "lost",
-        "time": 5.5,
-        "sand": 16256,
-        "taps": 5,
+        "time": 35.2,
+        "sand": 5990,
+        "taps": 12,
         "invariant": true
       }
     ]
@@ -2479,7 +2481,7 @@
       {
         "seed": 1,
         "status": "won",
-        "time": 59.49,
+        "time": 54.23,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2487,7 +2489,7 @@
       {
         "seed": 2,
         "status": "won",
-        "time": 63.55,
+        "time": 69.53,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2495,7 +2497,7 @@
       {
         "seed": 3,
         "status": "won",
-        "time": 79.13,
+        "time": 63.72,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2503,8 +2505,8 @@
       {
         "seed": 4,
         "status": "lost",
-        "time": 91,
-        "sand": 5974,
+        "time": 62.9,
+        "sand": 6364,
         "taps": 14,
         "invariant": true
       },
@@ -2512,14 +2514,14 @@
         "seed": 5,
         "status": "playing",
         "time": 150.01,
-        "sand": 6008,
-        "taps": 13,
+        "sand": 5817,
+        "taps": 14,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "won",
-        "time": 68.59,
+        "time": 54.48,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2527,7 +2529,7 @@
       {
         "seed": 7,
         "status": "won",
-        "time": 67.31,
+        "time": 54.62,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2535,7 +2537,7 @@
       {
         "seed": 8,
         "status": "won",
-        "time": 60.21,
+        "time": 48.63,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2543,7 +2545,7 @@
       {
         "seed": 9,
         "status": "won",
-        "time": 54.17,
+        "time": 54.91,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2551,7 +2553,7 @@
       {
         "seed": 10,
         "status": "won",
-        "time": 72.52,
+        "time": 60.78,
         "sand": 0,
         "taps": 19,
         "invariant": true
@@ -2562,22 +2564,22 @@
     "kind": "simulation",
     "policy": "lookahead",
     "level": 8,
-    "wins": 2,
-    "losses": 8,
+    "wins": 5,
+    "losses": 5,
     "timeouts": 0,
     "samples": [
       {
         "seed": 1,
         "status": "lost",
-        "time": 22.1,
-        "sand": 14610,
-        "taps": 6,
+        "time": 34.3,
+        "sand": 11380,
+        "taps": 9,
         "invariant": true
       },
       {
         "seed": 2,
         "status": "won",
-        "time": 77.04,
+        "time": 64.37,
         "sand": 0,
         "taps": 17,
         "invariant": true
@@ -2585,55 +2587,55 @@
       {
         "seed": 3,
         "status": "lost",
-        "time": 39.4,
-        "sand": 11524,
-        "taps": 9,
+        "time": 46.4,
+        "sand": 8752,
+        "taps": 11,
         "invariant": true
       },
       {
         "seed": 4,
         "status": "lost",
-        "time": 22.1,
-        "sand": 14610,
-        "taps": 6,
+        "time": 49.8,
+        "sand": 4297,
+        "taps": 13,
         "invariant": true
       },
       {
         "seed": 5,
-        "status": "lost",
-        "time": 22.1,
-        "sand": 14610,
-        "taps": 6,
+        "status": "won",
+        "time": 54.27,
+        "sand": 0,
+        "taps": 17,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "lost",
-        "time": 22.1,
-        "sand": 14610,
-        "taps": 6,
-        "invariant": true
-      },
-      {
-        "seed": 7,
-        "status": "lost",
-        "time": 46.3,
-        "sand": 8613,
+        "time": 42.5,
+        "sand": 6954,
         "taps": 12,
         "invariant": true
       },
       {
+        "seed": 7,
+        "status": "won",
+        "time": 67.15,
+        "sand": 0,
+        "taps": 17,
+        "invariant": true
+      },
+      {
         "seed": 8,
-        "status": "lost",
-        "time": 45.7,
-        "sand": 9994,
-        "taps": 10,
+        "status": "won",
+        "time": 61.67,
+        "sand": 0,
+        "taps": 17,
         "invariant": true
       },
       {
         "seed": 9,
         "status": "won",
-        "time": 65.53,
+        "time": 58.59,
         "sand": 0,
         "taps": 17,
         "invariant": true
@@ -2641,9 +2643,9 @@
       {
         "seed": 10,
         "status": "lost",
-        "time": 22.1,
-        "sand": 14610,
-        "taps": 6,
+        "time": 30.1,
+        "sand": 11380,
+        "taps": 8,
         "invariant": true
       }
     ]
@@ -2652,88 +2654,88 @@
     "kind": "simulation",
     "policy": "lookahead",
     "level": 9,
-    "wins": 0,
-    "losses": 10,
+    "wins": 1,
+    "losses": 9,
     "timeouts": 0,
     "samples": [
       {
         "seed": 1,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 13.9,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "lost",
-        "time": 101.4,
-        "sand": 5871,
-        "taps": 15,
+        "status": "won",
+        "time": 85.19,
+        "sand": 0,
+        "taps": 19,
         "invariant": true
       },
       {
         "seed": 3,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 14,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 4,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 13.9,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 13.9,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 13.9,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 7,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
-        "taps": 6,
+        "time": 93.9,
+        "sand": 13452,
+        "taps": 7,
         "invariant": true
       },
       {
         "seed": 8,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
+        "time": 13.9,
+        "sand": 14604,
         "taps": 6,
         "invariant": true
       },
       {
         "seed": 9,
         "status": "lost",
-        "time": 86.8,
-        "sand": 7842,
-        "taps": 13,
+        "time": 110,
+        "sand": 10356,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 10,
         "status": "lost",
-        "time": 15.5,
-        "sand": 14400,
-        "taps": 6,
+        "time": 85.3,
+        "sand": 9097,
+        "taps": 12,
         "invariant": true
       }
     ]
@@ -2742,88 +2744,88 @@
     "kind": "simulation",
     "policy": "lookahead",
     "level": 10,
-    "wins": 3,
-    "losses": 2,
+    "wins": 0,
+    "losses": 5,
     "timeouts": 5,
     "samples": [
       {
         "seed": 1,
-        "status": "won",
-        "time": 137.53,
-        "sand": 0,
-        "taps": 18,
+        "status": "playing",
+        "time": 150.01,
+        "sand": 10700,
+        "taps": 9,
         "invariant": true
       },
       {
         "seed": 2,
-        "status": "won",
-        "time": 82.47,
-        "sand": 0,
-        "taps": 18,
+        "status": "playing",
+        "time": 150.01,
+        "sand": 9628,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 3,
-        "status": "playing",
-        "time": 150.01,
-        "sand": 11556,
-        "taps": 8,
+        "status": "lost",
+        "time": 147.8,
+        "sand": 10247,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 4,
-        "status": "playing",
-        "time": 150.01,
-        "sand": 7959,
-        "taps": 12,
+        "status": "lost",
+        "time": 136.2,
+        "sand": 10198,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 5,
         "status": "lost",
-        "time": 132.9,
-        "sand": 11789,
-        "taps": 8,
+        "time": 134.1,
+        "sand": 10292,
+        "taps": 9,
         "invariant": true
       },
       {
         "seed": 6,
         "status": "lost",
-        "time": 106.2,
-        "sand": 12365,
-        "taps": 8,
+        "time": 52.6,
+        "sand": 6958,
+        "taps": 13,
         "invariant": true
       },
       {
         "seed": 7,
-        "status": "playing",
-        "time": 150.01,
-        "sand": 11605,
-        "taps": 8,
+        "status": "lost",
+        "time": 139.4,
+        "sand": 10293,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 8,
         "status": "playing",
         "time": 150.01,
-        "sand": 11590,
-        "taps": 8,
+        "sand": 9614,
+        "taps": 11,
         "invariant": true
       },
       {
         "seed": 9,
-        "status": "won",
-        "time": 69.42,
-        "sand": 0,
-        "taps": 18,
+        "status": "playing",
+        "time": 150.01,
+        "sand": 10910,
+        "taps": 10,
         "invariant": true
       },
       {
         "seed": 10,
         "status": "playing",
         "time": 150.01,
-        "sand": 11593,
-        "taps": 8,
+        "sand": 9756,
+        "taps": 10,
         "invariant": true
       }
     ]

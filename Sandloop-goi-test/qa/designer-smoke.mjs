@@ -1,0 +1,24 @@
+// Mở designer.html từ ổ đĩa (file://) bằng Chrome có cửa sổ, chạy Tự giải màn 4 và in kết quả.
+import puppeteer from 'puppeteer-core';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const url = pathToFileURL(path.resolve('dist-designer/designer.html')).href;
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', headless: false, defaultViewport: { width: 1500, height: 960 } });
+const page = await browser.newPage();
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e)));
+page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+await page.goto(url);
+await page.waitForSelector('.lv');
+await page.click('.lv:nth-child(4)');
+await page.click('#bAuto');
+await page.waitForFunction(() => /THẮNG/.test(document.querySelector('#result').innerText), { timeout: 120000 });
+console.log(await page.$eval('#result', (e) => e.innerText));
+await page.click('#bPlay');
+await page.click('.tool:nth-child(2)');
+await page.click('.cell:nth-child(1)');
+await page.waitForFunction(() => document.querySelector('#result').innerText.includes('Độ khó') || document.querySelector('#result').innerText.includes('⚠'), { timeout: 60000 });
+await page.waitForFunction(() => { const t = document.querySelector('#result').innerText; return t.includes('Độ khó') && !t.includes('kết quả cũ') && !t.includes('Đang chạy'); }, { timeout: 90000 });
+console.log('after edit:', (await page.$eval('#result', (e) => e.innerText)).split('\n').slice(0, 3).join(' | '));
+console.log('errors:', JSON.stringify(errors));
+await browser.close();

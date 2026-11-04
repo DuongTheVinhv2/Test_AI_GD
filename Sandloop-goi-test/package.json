@@ -8,7 +8,9 @@
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "designer": "tsc --noEmit && vite build --config vite.designer.config.ts",
+    "designer:dev": "vite --config vite.designer.config.ts --host 127.0.0.1 --port 5174 --open /designer.html"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

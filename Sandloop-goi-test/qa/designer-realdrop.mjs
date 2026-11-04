@@ -1,0 +1,26 @@
+// Kéo-thả file THẬT (CDP Input.dispatchDragEvent, giống kéo từ Explorer) vào designer.html trong Chrome có cửa sổ.
+import puppeteer from 'puppeteer-core';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const file = path.resolve(process.argv[2] ?? 'D:/Tool/LevelDesign/final/Level_20.png');
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', headless: false, defaultViewport: { width: 1500, height: 1000 } });
+const page = await browser.newPage();
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e)));
+await page.goto(pathToFileURL(path.resolve('dist-designer/designer.html')).href);
+await page.evaluate(() => localStorage.clear());
+await page.reload();
+await page.waitForSelector('.lv');
+const cdp = await page.createCDPSession();
+const data = { items: [], files: [file], dragOperationsMask: 1 };
+await cdp.send('Input.setInterceptDrags', { enabled: false }).catch(() => {});
+await cdp.send('Input.dispatchDragEvent', { type: 'dragEnter', x: 700, y: 400, data });
+await cdp.send('Input.dispatchDragEvent', { type: 'dragOver', x: 710, y: 410, data });
+console.log('overlay hiện:', await page.evaluate(() => document.body.classList.contains('dragging')));
+await cdp.send('Input.dispatchDragEvent', { type: 'drop', x: 710, y: 410, data });
+await page.waitForFunction(() => document.querySelector('#bGen').textContent.includes('Dừng'), { timeout: 10000 });
+console.log('đã tạo màn và đang gen:', await page.$eval('#list .lv.on', (e) => e.innerText.replace(/\n/g, ' ')));
+await page.waitForFunction(() => !document.querySelector('#bGen').textContent.includes('Dừng'), { timeout: 240000 });
+console.log((await page.$eval('#result', (e) => e.innerText)).split('\n').slice(0, 4).join(' | '));
+console.log('errors:', JSON.stringify(errors));
+await browser.close();

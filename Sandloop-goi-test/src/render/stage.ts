@@ -5,17 +5,17 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { STAGE } from './layout3d';
+import { BOARD, LOWER_STAGE_TILT, STAGE } from './layout3d';
 
 const GradeShader = {
   name: 'GradeShader',
   uniforms: {
     tDiffuse: { value: null as THREE.Texture | null },
     uTime: { value: 0 },
-    uVignette: { value: 0.22 },
-    uGrain: { value: 0.012 },
-    uSat: { value: 1.08 },
-    uFringe: { value: 0.0018 },
+    uVignette: { value: 0.045 },
+    uGrain: { value: 0 },
+    uSat: { value: 1.02 },
+    uFringe: { value: 0 },
     uTint: { value: new THREE.Color(1, 1, 1) },
     uFlash: { value: 0 },
     uDesat: { value: 0 },
@@ -66,9 +66,6 @@ export class Stage {
   private t0 = performance.now();
   private last = performance.now();
   readonly quality: QualityState;
-  /** Pointer driven parallax target in [-1, 1]. */
-  readonly look = new THREE.Vector2();
-  private lookSmooth = new THREE.Vector2();
   private shake = 0;
   private shakeT = 0;
   private baseDist = 60;
@@ -76,7 +73,8 @@ export class Stage {
   private lastQualityChange = 0;
   readonly fov = 24;
   /** World-space shift of the framing, positive moves the board up on screen. */
-  private frameShiftY = -0.55;
+  private frameShiftY = 0;
+  private boardRows = 5;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     const renderer = (this.renderer = new THREE.WebGLRenderer({
@@ -113,7 +111,7 @@ export class Stage {
     });
     this.composer = new EffectComposer(renderer, target);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.14, 0.5, 1.1);
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.07, 0.5, 1.1);
     this.composer.addPass(this.bloom);
     this.grade = new ShaderPass(GradeShader);
     this.composer.addPass(this.grade);
@@ -121,9 +119,6 @@ export class Stage {
 
     this.resize();
     window.addEventListener('resize', () => this.resize());
-    window.addEventListener('pointermove', (e) => {
-      this.look.set((e.clientX / window.innerWidth) * 2 - 1, -((e.clientY / window.innerHeight) * 2 - 1));
-    });
   }
 
   resize(): void {
@@ -139,10 +134,23 @@ export class Stage {
     this.camera.aspect = aspect;
     // Fit the whole board: limited by width on tall screens, by height on wide ones.
     const t = Math.tan(THREE.MathUtils.degToRad(this.fov / 2));
-    const needH = STAGE.h / 2 / t;
+    // The view is centred on `centre`; make sure the bottom edge of the last board row (plus a margin) is inside it.
+    // Boards of up to 5 rows keep the reference framing, taller ones zoom out just enough.
+    const centre = this.frameShiftY * 0.9 - 0.1;
+    const boardBottom = BOARD.top - this.boardRows * BOARD.cell - 0.9;
+    const bottomY = boardBottom * Math.cos(LOWER_STAGE_TILT);
+    const bottomDepth = boardBottom * Math.sin(LOWER_STAGE_TILT);
+    const needH = Math.max(STAGE.h / 2 / t, (centre - bottomY) / t + bottomDepth);
     const needW = STAGE.w / 2 / (t * aspect);
     this.baseDist = Math.max(needH, needW);
     this.camera.updateProjectionMatrix();
+  }
+
+  /** Tell the camera how many board rows the current level has so the last row never falls off screen. */
+  setBoardRows(rows: number): void {
+    if (rows === this.boardRows) return;
+    this.boardRows = rows;
+    this.resize();
   }
 
   /** Brief camera kick used for impacts. */
@@ -168,9 +176,6 @@ export class Stage {
   }
 
   render(dt: number, time: number): void {
-    this.lookSmooth.lerp(this.look, 1 - Math.exp(-dt * 3.0));
-    const idleX = Math.sin(time * 0.31) * 0.12;
-    const idleY = Math.cos(time * 0.23) * 0.08;
     let sx = 0;
     let sy = 0;
     if (this.shake > 0.001) {
@@ -180,10 +185,9 @@ export class Stage {
       sy = Math.cos(this.shakeT * 71) * k;
       this.shake *= Math.exp(-dt * 6);
     }
-    const px = this.lookSmooth.x * 0.42 + idleX + sx;
-    const py = this.lookSmooth.y * 0.3 + idleY + sy + this.frameShiftY;
-    this.camera.position.set(px, py + 2.2, this.baseDist);
-    this.camera.lookAt(px * 0.15, this.frameShiftY * 0.9 - 0.1, 0);
+    const y = this.frameShiftY * 0.9 - 0.1 + sy;
+    this.camera.position.set(sx, y, this.baseDist);
+    this.camera.lookAt(sx, y, 0);
 
     const u = this.grade.uniforms;
     u.uTime.value = time;

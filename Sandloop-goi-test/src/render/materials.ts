@@ -31,12 +31,12 @@ export function createMaterials(): Mats {
     envMapIntensity: 0.85,
   });
   const frameInner = frame.clone();
-  frameInner.color.set('#cfe5fb');
+  frameInner.color.set('#c9d4e7');
 
   const backPlate = new THREE.MeshStandardMaterial({ color: '#46484f', roughness: 0.95, metalness: 0.0, bumpMap: noise, bumpScale: 0.1 });
 
   const silver = new THREE.MeshPhysicalMaterial({
-    color: '#d3d8e6',
+    color: '#e7ebf7',
     roughness: 0.34,
     metalness: 0.35,
     clearcoat: 0.9,
@@ -44,12 +44,12 @@ export function createMaterials(): Mats {
     envMapIntensity: 1.1,
   });
   const silverDark = silver.clone();
-  silverDark.color.set('#9aa3bd');
+  silverDark.color.set('#66749f');
   silverDark.roughness = 0.42;
 
-  const slate = new THREE.MeshStandardMaterial({ color: '#8496c6', roughness: 0.62, metalness: 0.0, bumpMap: noise, bumpScale: 0.12 });
+  const slate = new THREE.MeshStandardMaterial({ color: '#788fc8', roughness: 0.62, metalness: 0.0, bumpMap: noise, bumpScale: 0.12 });
   const tile = new THREE.MeshPhysicalMaterial({
-    color: '#dbe9fc',
+    color: '#dbe5f6',
     roughness: 0.5,
     metalness: 0,
     clearcoat: 0.5,
@@ -66,12 +66,12 @@ export function createMaterials(): Mats {
     clearcoatRoughness: 0.2,
     envMapIntensity: 1.5,
   });
-  const plate = new THREE.MeshPhysicalMaterial({ color: '#4d5f8f', roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+  const plate = new THREE.MeshPhysicalMaterial({ color: '#49587e', roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.25 });
 
   const glass = new THREE.MeshPhysicalMaterial({
     color: '#e6f1ff',
     transparent: true,
-    opacity: 0.05,
+    opacity: 0.012,
     roughness: 0.04,
     metalness: 0,
     envMapIntensity: 1.2,
@@ -82,7 +82,7 @@ export function createMaterials(): Mats {
   const sheen = new THREE.MeshBasicMaterial({
     map: glassSheen(),
     transparent: true,
-    opacity: 0.09,
+    opacity: 0.024,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });

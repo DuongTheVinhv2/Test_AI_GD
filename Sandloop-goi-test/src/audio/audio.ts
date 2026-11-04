@@ -31,11 +31,12 @@ export class AudioEngine {
   private nextBeat = 0;
   private beatIndex = 0;
   private musicOn = false;
+  private hidden = false;
 
   /** Must be called from a user gesture the first time. */
   unlock(): void {
     if (this.ctx) {
-      if (this.ctx.state === 'suspended') void this.ctx.resume();
+      if (this.ctx.state === 'suspended' && !this.hidden) void this.ctx.resume();
       return;
     }
     const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -117,7 +118,17 @@ export class AudioEngine {
     this.music = on;
     if (!this.ctx) return;
     this.musicBus.gain.setTargetAtTime(on ? 0.34 : 0, this.ctx.currentTime, 0.2);
+    // Off really stops the scheduler, so nothing (not even the reverb send) is generated while music is off.
     if (on) this.startMusic();
+    else this.stopMusic();
+  }
+
+  /** The tab went to the background (or came back): stop all audio output while hidden. */
+  setHidden(hidden: boolean): void {
+    this.hidden = hidden;
+    if (!this.ctx) return;
+    if (hidden) void this.ctx.suspend();
+    else void this.ctx.resume();
   }
 
   private get t(): number {
@@ -179,11 +190,11 @@ export class AudioEngine {
   }
 
   tap(): void {
+    this.vibrate(8); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t;
     this.tone(720, 'sine', t, 0.004, 0.32, 0.11, this.sfxBus, 300);
     this.noiseBurst(t, 0.04, 3200, 1.2, 0.08, this.sfxBus);
-    this.vibrate(8);
   }
 
   land(): void {
@@ -194,6 +205,7 @@ export class AudioEngine {
   }
 
   reject(): void {
+    this.vibrate([20, 40, 20]); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t;
     const lp = this.ctx.createBiquadFilter();
@@ -202,17 +214,16 @@ export class AudioEngine {
     lp.connect(this.sfxBus);
     this.tone(210, 'square', t, 0.004, 0.16, 0.07, lp, 170);
     this.tone(190, 'square', t + 0.09, 0.004, 0.16, 0.08, lp, 150);
-    this.vibrate([20, 40, 20]);
   }
 
   reveal(): void {
+    this.vibrate(12); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t;
     this.noiseBurst(t, 0.14, 2600, 0.9, 0.16, this.sfxBus);
     this.noiseBurst(t + 0.03, 0.1, 5200, 1.4, 0.08, this.reverbSend);
     this.tone(880, 'sine', t + 0.02, 0.004, 0.14, 0.3, this.sfxBus);
     this.tone(1318, 'sine', t + 0.06, 0.004, 0.1, 0.34, this.reverbSend);
-    this.vibrate(12);
   }
 
   thaw(): void {
@@ -224,6 +235,7 @@ export class AudioEngine {
 
   /** A bucket is full: confetti pop and a rising pentatonic pluck. */
   complete(): void {
+    this.vibrate([10, 20, 10]); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t;
     this.combo = t - this.lastComplete < 4 ? Math.min(this.combo + 1, 9) : 0;
@@ -235,10 +247,10 @@ export class AudioEngine {
     this.tone(f * 1.5, 'sine', t + 0.07, 0.004, 0.12, 0.45, this.reverbSend);
     this.noiseBurst(t, 0.16, 3600, 0.7, 0.12, this.sfxBus);
     this.noiseBurst(t + 0.02, 0.4, 7000, 1.5, 0.05, this.reverbSend);
-    this.vibrate([10, 20, 10]);
   }
 
   win(): void {
+    this.vibrate([20, 40, 20, 40, 80]); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t + 0.05;
     const notes = [72, 76, 79, 84, 88, 91];
@@ -249,10 +261,10 @@ export class AudioEngine {
     });
     [60, 64, 67].forEach((m) => this.tone(midiToHz(m), 'sine', t + 0.45, 0.06, 0.12, 1.6, this.sfxBus));
     this.noiseBurst(t + 0.5, 1.2, 6000, 2, 0.06, this.reverbSend);
-    this.vibrate([20, 40, 20, 40, 80]);
   }
 
   lose(): void {
+    this.vibrate([60, 40, 60]); // haptics do not depend on the Sound setting
     if (!this.ctx || !this.sound) return;
     const t = this.t + 0.02;
     const lp = this.ctx.createBiquadFilter();
@@ -261,7 +273,6 @@ export class AudioEngine {
     lp.frequency.exponentialRampToValueAtTime(260, t + 1.2);
     lp.connect(this.sfxBus);
     [67, 63, 60, 55].forEach((m, i) => this.tone(midiToHz(m), 'triangle', t + i * 0.2, 0.01, 0.22, 0.6, lp));
-    this.vibrate([60, 40, 60]);
   }
 
   warn(): void {

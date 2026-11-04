@@ -1,0 +1,12 @@
+art 2 easy: matched=true tries=2 measured=easy wins 6/6 stuck 0 (34s) Khớp độ khó sau 2 lần kiểm (2 vòng, 78 bố cục thử trên mô hình nhanh).
+art 2 hard: matched=true tries=3 measured=hard wins 3/4 stuck 1 (22s) Khớp độ khó sau 3 lần kiểm (1 vòng, 23 bố cục thử trên mô hình nhanh).
+art 2 super: matched=false tries=3 measured=hard wins 1/4 stuck 3 (41s) Chưa khớp sau 4 vòng (237 bố cục thử, 3 lần kiểm game thật) — giữ bố cục gần nhất. | 196 trạng thái vẫn có ≥2 đường thắng — Siêu khó cần các xô phụ thuộc chặt hơn (bàn nhỏ hơn, hành lang dài hơn). / Không gian trạng thái lớn: kết quả mới được kiểm một phần (đã thử mẫu ngẫu nhiên).
+art 3 easy: matched=true tries=2 measured=easy wins 6/6 stuck 0 (34s) Khớp độ khó sau 2 lần kiểm (2 vòng, 63 bố cục thử trên mô hình nhanh).
+art 3 hard: matched=true tries=1 measured=hard wins 3/4 stuck 1 (28s) Khớp độ khó sau 1 lần kiểm (1 vòng, 15 bố cục thử trên mô hình nhanh).
+art 3 super: matched=false tries=3 measured=hard wins 1/3 stuck 2 (42s) Chưa khớp sau 3 vòng (62 bố cục thử, 3 lần kiểm game thật) — giữ bố cục gần nhất. | 818 trạng thái vẫn có ≥2 đường thắng — Siêu khó cần các xô phụ thuộc chặt hơn (bàn nhỏ hơn, hành lang dài hơn). / Không gian trạng thái lớn: kết quả mới được kiểm một phần (đã thử mẫu ngẫu nhiên).
+art 5 easy: matched=true tries=1 measured=easy wins 6/6 stuck 0 (42s) Khớp độ khó sau 1 lần kiểm (1 vòng, 34 bố cục thử trên mô hình nhanh).
+art 5 hard: matched=true tries=1 measured=hard wins 3/4 stuck 1 (30s) Khớp độ khó sau 1 lần kiểm (1 vòng, 15 bố cục thử trên mô hình nhanh).
+art 5 super: matched=false tries=3 measured=hard wins 3/6 stuck 3 (54s) Chưa khớp sau 3 vòng (54 bố cục thử, 3 lần kiểm game thật) — giữ bố cục gần nhất. | 1022 trạng thái vẫn có ≥2 đường thắng — Siêu khó cần các xô phụ thuộc chặt hơn (bàn nhỏ hơn, hành lang dài hơn). / Không gian trạng thái lớn: kết quả mới được kiểm một phần (đã thử mẫu ngẫu nhiên).
+art 8 easy: matched=true tries=4 measured=easy wins 6/6 stuck 0 (46s) Khớp độ khó sau 4 lần kiểm (2 vòng, 87 bố cục thử trên mô hình nhanh).
+art 8 hard: matched=true tries=1 measured=hard wins 1/4 stuck 2 (33s) Khớp độ khó sau 1 lần kiểm (1 vòng, 38 bố cục thử trên mô hình nhanh).
+art 8 super: matched=false tries=3 measured=hard wins 1/4 stuck 3 (47s) Chưa khớp sau 3 vòng (116 bố cục thử, 3 lần kiểm game thật) — giữ bố cục gần nhất. | 7 trạng thái vẫn có ≥2 đường thắng — Siêu khó cần các xô phụ thuộc chặt hơn (bàn nhỏ hơn, hành lang dài hơn). / Không gian trạng thái lớn: kết quả mới được kiểm một phần (đã thử mẫu ngẫu nhiên).

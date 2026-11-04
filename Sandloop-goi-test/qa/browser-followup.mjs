@@ -12,7 +12,7 @@ await page.addStyleTag({content:'*,*::before,*::after{animation:none!important;t
 for(const [width,height] of [[360,640],[844,390],[1366,768]]){
  await page.setViewport({width,height});await page.evaluate(()=>{const a=__app;a.stage.resize();a.startLevel(10);a.play.update(0,0);a.stage.render(0,0);});
  await page.screenshot({path:`qa/results/verified-level10-${width}x${height}.png`});
- await test(`layout-${width}x${height}`,()=>page.evaluate(()=>({pause:document.querySelector('.hud .round').getBoundingClientRect().toJSON(),lastRow:[...__app.play.actors.entries()].filter(([id])=>__app.play.game.board.buckets[id].r===5).map(([id,a])=>{const p=a.root.position.clone().project(__app.stage.camera);return{id,y:(1-p.y)*innerHeight/2};})})));
+ await test(`layout-${width}x${height}`,()=>page.evaluate(()=>({pause:document.querySelector('.hud .round').getBoundingClientRect().toJSON(),lastRow:[...__app.play.actors.entries()].filter(([id])=>__app.play.game.board.buckets[id].r===5).map(([id,a])=>{const p=a.root.getWorldPosition(a.root.position.clone()).project(__app.stage.camera);return{id,y:(1-p.y)*innerHeight/2};})})));
 }
 await page.setViewport({width:390,height:844});
 await page.evaluate(()=>{const a=__app;a.stage.resize();a.play.colorAssist=true;a.startLevel(10);a.play.update(0,0);a.stage.render(0,0);});await page.screenshot({path:'qa/results/mystery-marks.png'});
@@ -20,7 +20,7 @@ await test('memory-same-level',()=>page.evaluate(()=>{const a=__app;a.startLevel
 await test('pause-resume-levels',async()=>{await page.click('.hud .round');const paused=await page.evaluate(()=>({mode:__app.mode,t:__app.play.game.time}));await page.click('.pause .btn.blue:last-child');const levels=await page.evaluate(()=>({mode:__app.mode,locked:document.querySelectorAll('.lvcard.locked').length}));await page.click('.levels .x');const back=await page.evaluate(()=>__app.mode);await page.click('.pause .btn');return{paused,levels,back,resumed:await page.evaluate(()=>__app.mode)};});
 await test('real-level1-play-win-next',async()=>{
  await page.evaluate(()=>{__app.startLevel(1);__app.play.update(0,0);__app.stage.render(0,0);});
- for(let id=0;id<5;id++){const p=await page.evaluate(id=>{const a=__app,p=a.play.actors.get(id).root.position.clone().project(a.stage.camera);return{x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2};},id);await page.mouse.click(p.x,p.y);}
+ for(let id=0;id<5;id++){const p=await page.evaluate(id=>{const a=__app,p=a.play.actors.get(id).root.getWorldPosition(a.play.actors.get(id).root.position.clone()).project(a.stage.camera);return{x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2};},id);await page.mouse.click(p.x,p.y);}
  const won=await page.evaluate(()=>{const a=__app,g=a.play.game;for(let i=0;i<150*100&&g.status==='playing';i++)g.step();a.play.update(0,0);if(g.status!=='won')throw Error('Did not win: '+JSON.stringify({mode:a.mode,taps:g.stats.taps,status:g.status}));a.showResult();return{taps:g.stats.taps,status:g.status,coins:a.save.data.coins,unlocked:a.save.data.unlocked};});
  // Wait for the actual CSS button animation before clicking.
  await new Promise(r=>setTimeout(r,1800));await page.screenshot({path:'qa/results/win.png'});await page.click('.win .btn');return{won,next:await page.evaluate(()=>({mode:__app.mode,level:__app.play.game.level.id}))};

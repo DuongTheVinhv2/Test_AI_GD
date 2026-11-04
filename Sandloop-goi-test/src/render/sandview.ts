@@ -55,7 +55,7 @@ const FRAG = /* glsl */ `
         if (score > bestScore) {
           bestScore = score;
           bestN = normalize(vec3(q / rad * 0.72, z));
-          bestBase = uPal[id - 1] * (0.90 + 0.20 * fract(rnd * 17.9));
+          bestBase = uPal[id - 1] * (0.94 + 0.14 * fract(rnd * 17.9));
           bestRnd = rnd;
           bestCell = c;
         }
@@ -81,20 +81,21 @@ const FRAG = /* glsl */ `
         filled += texelFetch(uGrid, c, 0).r > 0.0 ? 1.0 : 0.0;
       }
     }
-    float ao = mix(1.0, 0.80, filled / 8.0);
+    float ao = mix(1.0, 0.91, filled / 8.0);
 
     vec3 L = normalize(vec3(-0.40, 0.62, 0.68));
     vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));
     float diff = max(dot(bestN, L), 0.0);
     float spec = pow(max(dot(bestN, H), 0.0), 38.0);
     float rim = pow(1.0 - bestN.z, 2.4);
-    vec3 col = bestBase * (0.78 + 0.34 * diff) * ao;
-    col += vec3(1.0, 0.97, 0.9) * spec * 0.28 * ao;
+    vec3 col = bestBase * (0.96 + 0.16 * diff) * ao;
+    col += vec3(1.0, 0.97, 0.9) * spec * 0.065 * ao;
     col += bestBase * rim * 0.12;
     // A few grains flash as the light breathes.
     float tw = 0.5 + 0.5 * sin(uTime * (1.4 + bestRnd * 2.2) + bestRnd * 60.0);
-    float sparkle = step(0.962, fract(bestRnd * 91.37)) * (0.3 + 0.7 * tw);
-    col += vec3(1.0, 0.95, 0.85) * sparkle * (0.25 + spec * 1.6) * ao;
+    // Rare and soft: flat areas of the picture must read as clean colour, not noise.
+    float sparkle = step(0.992, fract(bestRnd * 91.37)) * (0.3 + 0.7 * tw);
+    col += vec3(1.0, 0.95, 0.85) * sparkle * (0.018 + spec * 0.12) * ao;
     // Soft light falling from above the window.
     col *= 0.94 + 0.12 * vUv.y;
     gl_FragColor = vec4(col * uBright, 1.0);

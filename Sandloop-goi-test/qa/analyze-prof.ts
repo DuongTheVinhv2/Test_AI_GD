@@ -1,0 +1,11 @@
+import { LEVELS } from '../src/core/levels';
+import { analyze, confirmedTaps, prepare, replay, SEED, type DesignLevel } from '../src/designer/analyze';
+import { newGame, randomPlayout, settle } from '../src/designer/solver';
+const lv = LEVELS[Number(process.argv[2] ?? 3)] as DesignLevel;
+const T = <R>(label: string, f: () => R): R => { const t = performance.now(); const r = f(); console.log(label.padEnd(24), (performance.now() - t).toFixed(0), 'ms'); return r; };
+const g = T('newGame+settle', () => { const x = newGame(prepare(lv, 4), SEED); settle(x); return x; });
+T('6 playouts', () => { for (let i = 1; i <= 6; i++) randomPlayout(g, i); });
+const w = T('confirmed win', () => confirmedTaps(lv, 4, 'won', 2000));
+T('confirmed stuck', () => confirmedTaps(lv, 4, 'stuck', 2000));
+if (w) T('replay win', () => replay(lv, 4, w));
+T('analyze total', () => analyze(lv, { layer: 4, playouts: 6, winMs: 20000, stuckMs: 6000 }));

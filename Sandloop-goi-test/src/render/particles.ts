@@ -22,7 +22,8 @@ const VERT = /* glsl */ `
     vec2 p = vec2(position.x * c - position.y * s, position.x * s + position.y * c);
     // Confetti and coins flip around their vertical axis.
     if (aData.y > 2.5 && aData.y < 4.5) p.x *= cos(aData.w);
-    vec3 world = aPos + (uRight * p.x + uUp * p.y) * aData.x;
+    vec3 center = (modelMatrix * vec4(aPos, 1.0)).xyz;
+    vec3 world = center + (uRight * p.x + uUp * p.y) * aData.x;
     gl_Position = projectionMatrix * viewMatrix * vec4(world, 1.0);
   }
 `;

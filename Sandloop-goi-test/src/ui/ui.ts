@@ -12,6 +12,10 @@ export interface UICallbacks {
   onPick(level: number): void;
   onToggle(key: 'sound' | 'music' | 'haptics' | 'colorAssist'): void;
   onTitle(): void;
+  onUndo(): void;
+  onSpeed(): void;
+  /** All-cleared screen: start over from level 1. */
+  onPlayAll(): void;
 }
 
 export interface LevelCard {
@@ -109,6 +113,7 @@ export class UI {
   private levelsL: HTMLElement;
   private finishL: HTMLElement;
   private toastEl: HTMLElement;
+  private toastTimer = 0;
   private toggles = new Map<string, HTMLElement>();
   private playBtn!: HTMLButtonElement;
   private subEl!: HTMLElement;
@@ -117,6 +122,15 @@ export class UI {
   private whyEl!: HTMLElement;
   private grid!: HTMLElement;
   private finishP!: HTMLElement;
+  private pauseBtn!: HTMLButtonElement;
+  private speedBtn!: HTMLButtonElement;
+  private pauseOk = true;
+  private confirmL!: HTMLElement;
+  private confirmTitle!: HTMLElement;
+  private confirmText!: HTMLElement;
+  private confirmYes!: HTMLButtonElement;
+  private confirmAction: (() => void) | null = null;
+  private undoBtns: HTMLButtonElement[] = [];
   private shownCoins = 0;
   private coinAnim = 0;
 
@@ -142,7 +156,14 @@ export class UI {
     const pauseBtn = el('button', 'round', ICONS.pause);
     pauseBtn.setAttribute('aria-label', 'Pause');
     pauseBtn.onclick = () => cb.onPause();
-    left.appendChild(pauseBtn);
+    this.pauseBtn = pauseBtn;
+    this.speedBtn = el('button', 'round speed belt-speed', 'x1');
+    this.speedBtn.hidden = true;
+    this.speedBtn.setAttribute('aria-label', 'Game speed');
+    this.speedBtn.setAttribute('aria-pressed', 'false');
+    this.speedBtn.onclick = () => cb.onSpeed();
+    left.append(pauseBtn);
+    root.appendChild(this.speedBtn);
     const mid = el('div', 'levelTag');
     this.lvEl = el('div', 'lv', 'Level 1');
     this.nameEl = el('div', 'name');
@@ -162,8 +183,9 @@ export class UI {
     this.failL = this.buildFail();
     this.levelsL = this.buildLevels();
     this.finishL = this.buildFinish();
+    this.confirmL = this.buildConfirm();
     this.toastEl = el('div', 'toast');
-    this.frame.append(this.title, this.pauseL, this.winL, this.failL, this.levelsL, this.finishL, this.toastEl);
+    this.frame.append(this.title, this.pauseL, this.winL, this.failL, this.levelsL, this.finishL, this.confirmL, this.toastEl);
 
     this.fit();
     window.addEventListener('resize', () => this.fit());
@@ -209,7 +231,9 @@ export class UI {
     const body = el('div', 'body');
     const tg = el('div', 'toggles');
     const mk = (key: 'sound' | 'music' | 'haptics' | 'colorAssist', label: string, icon: string) => {
-      const b = el('button', 'toggle', `<span class="ico">${icon}</span><span>${label}</span>`);
+      // The state is also spelled out (On / Off) and exposed through aria-pressed, so it does not rest on colour alone.
+      const b = el('button', 'toggle', `<span class="ico">${icon}</span><span>${label}</span><span class="st">On</span>`);
+      b.setAttribute('aria-pressed', 'true');
       b.onclick = () => this.cb.onToggle(key);
       this.toggles.set(key, b);
       tg.appendChild(b);
@@ -220,11 +244,12 @@ export class UI {
     mk('colorAssist', 'Marks', ICONS.eye);
     const resume = el('button', 'btn', 'Resume');
     resume.onclick = () => this.cb.onResume();
+    const undo = this.makeUndo('btn blue');
     const restart = el('button', 'btn blue', 'Restart level');
     restart.onclick = () => this.cb.onRestart();
     const levels = el('button', 'btn blue', 'All levels');
     levels.onclick = () => this.cb.onLevels();
-    body.append(tg, resume, restart, levels);
+    body.append(tg, resume, undo, restart, levels);
     card.append(head, body);
     layer.appendChild(card);
     return layer;
@@ -234,7 +259,7 @@ export class UI {
     const layer = el('div', 'layer win');
     layer.appendChild(el('div', 'dim'));
     const rib = el('div', 'ribbon', ribbonSvg(false));
-    rib.appendChild(el('div', 'txt', '<span>LEVEL</span><span>COMPLETE</span>'));
+    rib.appendChild(el('div', 'txt', 'YOU WIN'));
     layer.appendChild(rib);
     const reward = el('div', 'reward', STACK_SVG);
     this.rewardAmt = el('div', 'amount', 'x0');
@@ -244,26 +269,109 @@ export class UI {
     const next = el('div', 'next');
     const nb = el('button', 'btn pulse', 'Next');
     nb.onclick = () => this.cb.onNext();
-    next.appendChild(nb);
+    const row = el('div', 'row');
+    const again = el('button', 'btn blue small', 'Replay');
+    again.onclick = () => this.cb.onRetry();
+    const lv = el('button', 'btn blue small', 'All levels');
+    lv.onclick = () => this.cb.onLevels();
+    row.append(again, lv);
+    next.append(nb, row);
     layer.appendChild(next);
     return layer;
+  }
+
+  /** "Undo last move (n left)" button; every undo button is kept in sync by setUndo. */
+  private makeUndo(cls: string): HTMLButtonElement {
+    const b = el('button', cls, 'Undo move');
+    b.onclick = () => this.cb.onUndo();
+    this.undoBtns.push(b);
+    return b;
+  }
+
+  private buildConfirm(): HTMLElement {
+    const layer = el('div', 'layer confirm');
+    layer.appendChild(el('div', 'dim'));
+    const card = el('div', 'card');
+    this.confirmTitle = el('div', 'head', '');
+    const body = el('div', 'body');
+    this.confirmText = el('p');
+    this.confirmYes = el('button', 'btn blue', 'Leave');
+    this.confirmYes.onclick = () => {
+      const f = this.confirmAction;
+      this.hideConfirm();
+      f?.();
+    };
+    const keep = el('button', 'btn', 'Keep playing');
+    keep.onclick = () => this.hideConfirm();
+    body.append(this.confirmText, keep, this.confirmYes);
+    card.append(this.confirmTitle, body);
+    layer.appendChild(card);
+    return layer;
+  }
+
+  /** Ask before throwing away a level in progress. */
+  confirm(title: string, text: string, yesLabel: string, onYes: () => void): void {
+    this.confirmTitle.textContent = title;
+    this.confirmText.textContent = text;
+    this.confirmYes.textContent = yesLabel;
+    this.confirmAction = onYes;
+    this.on(this.confirmL, true);
+  }
+
+  hideConfirm(): void {
+    this.confirmAction = null;
+    this.on(this.confirmL, false);
+  }
+
+  /** Dim the pause button when pausing is not possible (result screens, finished game). */
+  setPauseEnabled(ok: boolean): void {
+    if (ok === this.pauseOk) return;
+    this.pauseOk = ok;
+    this.pauseBtn.disabled = !ok;
+    this.pauseBtn.classList.toggle('off', !ok);
+  }
+
+  /** Show the current game speed (1 or 2) on the HUD button. */
+  setSpeed(x: number): void {
+    this.speedBtn.textContent = `x${x}`;
+    this.speedBtn.classList.toggle('on', x > 1);
+    this.speedBtn.setAttribute('aria-pressed', String(x > 1));
+  }
+
+  /** Centre of the reward amount on the win screen, in viewport pixels (where the flying coins start). */
+  rewardPoint(): { x: number; y: number } {
+    const r = this.rewardAmt.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  /** `left` undo steps remain; 0 hides nothing but disables the buttons. */
+  setUndo(left: number): void {
+    for (const b of this.undoBtns) {
+      b.disabled = left <= 0;
+      b.classList.toggle('off', left <= 0);
+      b.textContent = left > 0 ? `Undo move (${left})` : 'Undo move';
+    }
   }
 
   private buildFail(): HTMLElement {
     const layer = el('div', 'layer fail');
     layer.appendChild(el('div', 'dim'));
+    // Everything sits over the picture at the top, so the belt and the board stay visible to show why it jammed.
+    const top = el('div', 'failTop');
     const rib = el('div', 'ribbon fail', ribbonSvg(true));
     rib.appendChild(el('div', 'txt', '<span>BELT</span><span>JAMMED</span>'));
-    layer.appendChild(rib);
     this.whyEl = el('div', 'why');
-    layer.appendChild(this.whyEl);
     const next = el('div', 'next');
     const retry = el('button', 'btn pulse', 'Try again');
     retry.onclick = () => this.cb.onRetry();
+    const row = el('div', 'row');
+    const undo = this.makeUndo('btn blue small');
     const lv = el('button', 'btn blue small', 'All levels');
     lv.onclick = () => this.cb.onLevels();
-    next.append(retry, lv);
-    layer.appendChild(next);
+    row.append(undo, lv);
+    next.append(retry, row);
+    top.append(rib, this.whyEl, next);
+    layer.appendChild(top);
     return layer;
   }
 
@@ -293,8 +401,8 @@ export class UI {
     const card = el('div', 'card');
     const body = el('div', 'body');
     this.finishP = el('p');
-    const again = el('button', 'btn', 'Play again');
-    again.onclick = () => this.cb.onPlay();
+    const again = el('button', 'btn', 'Play from level 1');
+    again.onclick = () => this.cb.onPlayAll();
     const lv = el('button', 'btn blue small', 'All levels');
     lv.onclick = () => this.cb.onLevels();
     body.append(this.finishP, again, lv);
@@ -307,10 +415,23 @@ export class UI {
 
   private on(layer: HTMLElement, show: boolean): void {
     layer.classList.toggle('on', show);
+    if (show) this.hideToast(); // a hint must not sit on top of a menu or result screen
+  }
+
+  hideToast(): void {
+    window.clearTimeout(this.toastTimer);
+    this.toastEl.classList.remove('on');
   }
 
   showHud(show: boolean): void {
     this.hud.classList.toggle('hidden', !show);
+  }
+
+  placeSpeedButton(x: number, y: number, visible: boolean): void {
+    this.speedBtn.hidden = !visible;
+    if (!visible) return;
+    this.speedBtn.style.left = `${x}px`;
+    this.speedBtn.style.top = `${y}px`;
   }
 
   setLevel(n: number, name: string, hard: boolean): void {
@@ -357,11 +478,17 @@ export class UI {
 
   showPause(show: boolean, s: { sound: boolean; music: boolean; haptics: boolean; colorAssist: boolean }): void {
     this.on(this.pauseL, show);
-    for (const [k, b] of this.toggles) b.classList.toggle('on', (s as Record<string, boolean>)[k]);
+    this.setToggles(s);
   }
 
   setToggles(s: { sound: boolean; music: boolean; haptics: boolean; colorAssist: boolean }): void {
-    for (const [k, b] of this.toggles) b.classList.toggle('on', (s as Record<string, boolean>)[k]);
+    for (const [k, b] of this.toggles) {
+      const on = (s as Record<string, boolean>)[k];
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', String(on));
+      (b.querySelector('.st') as HTMLElement).textContent = on ? 'On' : 'Off';
+      if (k === 'sound') (b.querySelector('.ico') as HTMLElement).innerHTML = on ? ICONS.sound : ICONS.soundOff;
+    }
   }
 
   showWin(show: boolean, reward = 0, bonus = ''): void {
@@ -411,14 +538,25 @@ export class UI {
       if (c.state === 'done') b.appendChild(el('span', 'done', ICONS.check));
       if (c.state === 'locked') b.appendChild(el('span', 'lock', ICONS.lock));
       if (c.state !== 'locked') b.onclick = () => this.cb.onPick(c.id);
+      else {
+        b.setAttribute('aria-disabled', 'true');
+        b.onclick = () => {
+          this.toast(`Clear level ${c.id - 1} first to unlock level ${c.id}`, 1800);
+          b.classList.remove('nope');
+          void b.offsetWidth;
+          b.classList.add('nope');
+        };
+      }
       this.grid.appendChild(b);
     }
   }
 
-  toast(text: string, ms = 1600): void {
+  toast(text: string, ms = 1600, wide = false): void {
+    window.clearTimeout(this.toastTimer);
     this.toastEl.textContent = text;
+    this.toastEl.classList.toggle('wide', wide);
     this.toastEl.classList.add('on');
-    window.setTimeout(() => this.toastEl.classList.remove('on'), ms);
+    this.toastTimer = window.setTimeout(() => this.toastEl.classList.remove('on'), ms);
   }
 
   /** Coins that fly from a point to the coin pill. */

@@ -9,7 +9,7 @@ export interface SkyTheme {
 }
 
 export const SKIES: Record<string, SkyTheme> = {
-  meadow: { top: '#86cdfb', mid: '#b4e4ff', bottom: '#e2f6ff', glow: '#ffffff' },
+  meadow: { top: '#c8e1ff', mid: '#c7dfff', bottom: '#a9c7ef', glow: '#ffffff' },
   dusk: { top: '#9b8cf0', mid: '#f7a8c8', bottom: '#ffe0c0', glow: '#fff1d8' },
   lagoon: { top: '#43b5e8', mid: '#7fdcf2', bottom: '#d9fbff', glow: '#eaffff' },
   garden: { top: '#7fd0e8', mid: '#bdeedc', bottom: '#effbe0', glow: '#fffff0' },
@@ -33,14 +33,14 @@ const FRAG = /* glsl */ `
     vec3 col = mix(uBottom, uMid, smoothstep(0.0, 0.55, y));
     col = mix(col, uTop, smoothstep(0.5, 1.0, y));
     vec2 c = (vUv - vec2(0.5, 0.62)) * vec2(uAspect.x, 1.0);
-    col += uGlow * 0.30 * exp(-dot(c, c) * 4.0);
+    col += uGlow * 0.035 * exp(-dot(c, c) * 4.0);
     // Slow cloud banks.
     vec2 p = vec2(vUv.x * uAspect.x * 1.6 + uTime * 0.012, vUv.y * 2.4);
     float n = fbm(p * 1.4 + vec2(0.0, 3.0));
-    float cl = smoothstep(0.55, 0.85, n) * smoothstep(0.1, 0.5, y) * 0.55;
+    float cl = smoothstep(0.55, 0.85, n) * smoothstep(0.1, 0.5, y) * 0.10;
     col = mix(col, vec3(1.0), cl);
     float n2 = fbm(p * 2.6 + vec2(uTime * 0.02, 9.0));
-    col = mix(col, vec3(1.0), smoothstep(0.62, 0.9, n2) * 0.25 * smoothstep(0.0, 0.7, y));
+    col = mix(col, vec3(1.0), smoothstep(0.62, 0.9, n2) * 0.045 * smoothstep(0.0, 0.7, y));
     gl_FragColor = vec4(col, 1.0);
   }
 `;
@@ -87,19 +87,20 @@ export class Sky {
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     this.motes = new THREE.Points(
       geo,
-      new THREE.PointsMaterial({ map: softDot(), size: 0.2, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, color: '#ffffff', sizeAttenuation: true }),
+      new THREE.PointsMaterial({ map: softDot(), size: 0.2, transparent: true, opacity: 0.12, depthWrite: false, blending: THREE.AdditiveBlending, color: '#ffffff', sizeAttenuation: true }),
     );
     this.motes.frustumCulled = false;
     this.group.add(this.motes);
   }
 
   setTheme(name: string): void {
-    const t = SKIES[name] ?? SKIES.meadow;
+    const t = SKIES.meadow;
+    const accent = SKIES[name] ?? t;
     const u = this.mat.uniforms;
     u.uTop.value.set(t.top);
     u.uMid.value.set(t.mid);
     u.uBottom.value.set(t.bottom);
-    u.uGlow.value.set(t.glow);
+    u.uGlow.value.set(accent.glow);
   }
 
   update(time: number, camera: THREE.PerspectiveCamera): void {

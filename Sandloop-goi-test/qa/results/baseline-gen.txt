@@ -1,0 +1,30 @@
+art 0 easy: matched=true tries=1 measured=easy wins 6/6 stuck 0 (21s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 0 hard: matched=false tries=4 measured=easy wins 6/6 stuck 0 (35s) Không khớp: tranh chỉ có 2 màu, ít phụ thuộc màu nên khó tạo case stuck. Thử tranh nhiều màu hơn.
+art 0 super: matched=false tries=20 measured=easy wins 6/6 stuck 0 (34s) Không khớp: tranh chỉ có 2 màu, ít phụ thuộc màu nên khó tạo case stuck. Thử tranh nhiều màu hơn.
+art 1 easy: matched=true tries=1 measured=easy wins 6/6 stuck 0 (25s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 1 hard: matched=false tries=4 measured=easy wins 6/6 stuck 0 (41s) Chưa khớp sau 4 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 1 super: matched=false tries=16 measured=easy wins 6/6 stuck 0 (38s) Chưa khớp sau 16 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 2 easy: matched=false tries=5 measured=easy wins 6/6 stuck 0 (51s) Chưa khớp sau 5 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 2 hard: matched=true tries=1 measured=hard wins 5/6 stuck 0 (20s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 2 super: matched=false tries=11 measured=hard wins 2/6 stuck 4 (30s) Chưa khớp sau 11 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 3 easy: matched=true tries=5 measured=hard wins 4/6 stuck 1 (78s) Đã gen 5 bố cục, bố cục #5 khớp độ khó yêu cầu.
+art 3 hard: matched=true tries=2 measured=hard wins 3/6 stuck 3 (40s) Đã gen 2 bố cục, bố cục #2 khớp độ khó yêu cầu.
+art 3 super: matched=false tries=9 measured=hard wins 2/6 stuck 4 (33s) Chưa khớp sau 9 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 4 easy: matched=true tries=1 measured=hard wins 5/6 stuck 1 (44s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 4 hard: matched=false tries=2 measured=hard wins 5/6 stuck 1 (49s) Chưa khớp sau 2 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 4 super: matched=false tries=11 measured=easy wins 6/6 stuck 0 (42s) Chưa khớp sau 11 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 5 easy: matched=false tries=5 measured=hard wins 3/6 stuck 2 (45s) Chưa khớp sau 5 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 5 hard: matched=true tries=1 measured=hard wins 4/6 stuck 2 (23s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 5 super: matched=false tries=11 measured=hard wins 4/6 stuck 2 (35s) Chưa khớp sau 11 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 6 easy: matched=false tries=5 measured=hard wins 3/6 stuck 1 (48s) Chưa khớp sau 5 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 6 hard: matched=true tries=1 measured=hard wins 3/6 stuck 3 (23s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 6 super: matched=false tries=9 measured=hard wins 4/6 stuck 2 (36s) Chưa khớp sau 9 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 7 easy: matched=false tries=3 measured=hard wins 6/6 stuck 0 (44s) Chưa khớp sau 3 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 7 hard: matched=false tries=3 measured=hard wins 6/6 stuck 0 (37s) Chưa khớp sau 3 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 7 super: matched=false tries=13 measured=easy wins 6/6 stuck 0 (38s) Chưa khớp sau 13 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 8 easy: matched=false tries=14 measured=hard wins 5/6 stuck 0 (44s) Chưa khớp sau 14 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 8 hard: matched=true tries=1 measured=hard wins 2/6 stuck 4 (15s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 8 super: matched=true tries=1 measured=hard wins 1/6 stuck 5 (15s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 9 easy: matched=false tries=6 measured=hard wins 6/6 stuck 0 (42s) Chưa khớp sau 6 bố cục — giữ bố cục gần nhất. Thử gen lại hoặc tăng thời gian.
+art 9 hard: matched=true tries=1 measured=hard wins 4/6 stuck 2 (17s) Đã gen 1 bố cục, bố cục #1 khớp độ khó yêu cầu.
+art 9 super: matched=true tries=4 measured=hard wins 2/6 stuck 4 (19s) Đã gen 4 bố cục, bố cục #4 khớp độ khó yêu cầu.

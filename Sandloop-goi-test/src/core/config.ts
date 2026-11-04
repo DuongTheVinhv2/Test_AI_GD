@@ -11,11 +11,14 @@ export const LANE = {
   x0: -0.1,
   x1: 1.1,
   /** Travel speed along the lane, window widths per second. */
-  speed: 0.26,
-  /** Seconds a bucket spends going round the cap and back to the start. */
-  returnTime: 0.7,
+  speed: 0.3,
+  /**
+   * Seconds a bucket spends going round the end cap and back to the start. With five evenly spaced slots the loop is
+   * 1.2 / speed + returnTime = 5.3 s, so neighbours are 1.06 s (0.32 window widths) apart: one bucket-sized gap between them.
+   */
+  returnTime: 1.3,
   /** Seconds a tapped bucket spends flying from the board to the belt start. */
-  flyBase: 0.3,
+  flyBase: 0.4,
   flyPerCell: 0,
   popTime: 0.7,
   /** Grains a bucket can reach on each side of its centre. */

@@ -1,24 +1,41 @@
 import * as THREE from 'three';
 import { SAND_COLORS } from '../core/palette';
+import { LOWER_STAGE_TILT } from './layout3d';
 import type { Mats } from './materials';
-import { labelTexture, numberTexture, softDot, type GlyphAtlas } from './textures';
+import { slabGeometry } from './shapes';
+import { beamTexture, labelTexture, numberTexture, softDot, type GlyphAtlas } from './textures';
 
 /** Bucket diameter is 2.0 world units; everything below is expressed in that scale. */
 const R_TOP = 1.0;
 const R_BOT = 0.8;
-const H = 1.05;
+const H = 0.83;
 
 /** Flat black used for the toon outline hulls. */
 export function outlineMaterial(color = '#0b0a1c'): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
 }
 
+/** Remap circular rings into rounded squares while keeping the cup's tapered profile. */
+function squareProfile(geometry: THREE.BufferGeometry): void {
+  const position = geometry.getAttribute('position');
+  for (let i = 0; i < position.count; i++) {
+    const x = position.getX(i);
+    const z = position.getZ(i);
+    const radius = Math.hypot(x, z);
+    if (radius < 0.00001) continue;
+    const scale = radius / Math.pow(x ** 6 + z ** 6, 1 / 6);
+    position.setX(i, x * scale * 0.94);
+    position.setZ(i, z * scale * 0.94);
+  }
+  geometry.computeVertexNormals();
+}
+
 interface ColorKit {
   shell: THREE.MeshPhysicalMaterial;
   inner: THREE.MeshStandardMaterial;
   rim: THREE.MeshPhysicalMaterial;
-  dome: THREE.MeshPhysicalMaterial;
   sand: THREE.MeshStandardMaterial;
+  inactive: THREE.MeshStandardMaterial;
   color: THREE.Color;
 }
 
@@ -27,14 +44,12 @@ export class BucketKit {
   readonly shellGeo: THREE.LatheGeometry;
   readonly innerGeo: THREE.LatheGeometry;
   readonly rimGeo: THREE.TorusGeometry;
-  readonly domeGeo: THREE.SphereGeometry;
-  readonly bandGeo: THREE.CylinderGeometry;
+  readonly markerGeo = slabGeometry(1.65, 1.55, 0.28, 0.32, 0.09);
   readonly moundGeo: THREE.SphereGeometry;
   readonly shadowGeo = new THREE.PlaneGeometry(2.7, 2.2);
   readonly outline = outlineMaterial();
   readonly shadowMat: THREE.MeshBasicMaterial;
-  readonly band: THREE.MeshPhysicalMaterial;
-  readonly mystery: THREE.MeshPhysicalMaterial;
+  readonly mystery = new THREE.MeshStandardMaterial({ color: '#505d76', roughness: 0.62 });
   readonly question: THREE.MeshBasicMaterial;
   private kits: ColorKit[] = [];
 
@@ -61,20 +76,20 @@ export class BucketKit {
     const cols = new Float32Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
       const t = (pos.getY(i) + H / 2) / H;
-      const k = 0.45 + 0.4 * t;
+      const k = 0.72 + 0.28 * t;
       cols[i * 3] = cols[i * 3 + 1] = cols[i * 3 + 2] = k;
     }
     this.innerGeo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
     this.rimGeo = new THREE.TorusGeometry(R_TOP - 0.02, 0.075, 12, 56);
     this.rimGeo.rotateX(Math.PI / 2);
     this.rimGeo.translate(0, H / 2, 0);
-    this.domeGeo = new THREE.SphereGeometry(R_TOP - 0.04, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2);
-    this.bandGeo = new THREE.CylinderGeometry(R_TOP, R_TOP - 0.06, 0.46, 40);
     this.moundGeo = new THREE.SphereGeometry(R_TOP - 0.12, 36, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+
+    for (const geometry of [this.shellGeo, this.innerGeo, this.rimGeo, this.moundGeo]) squareProfile(geometry);
 
     SAND_COLORS.forEach((sc) => {
       const color = new THREE.Color(sc.hex);
-      const light = color.clone().lerp(new THREE.Color('#ffffff'), 0.34);
+      const light = color.clone().lerp(new THREE.Color('#ffffff'), 0.20);
       const shell = new THREE.MeshPhysicalMaterial({
         color,
         roughness: 0.32,
@@ -82,9 +97,8 @@ export class BucketKit {
         clearcoatRoughness: 0.14,
         envMapIntensity: 0.9,
       });
-      const inner = new THREE.MeshStandardMaterial({ color: color.clone().lerp(new THREE.Color('#000000'), 0.32), roughness: 0.9, vertexColors: true, side: THREE.DoubleSide });
+      const inner = new THREE.MeshStandardMaterial({ color: color.clone().lerp(new THREE.Color('#000000'), 0.1), roughness: 0.62, vertexColors: true, side: THREE.DoubleSide });
       const rim = new THREE.MeshPhysicalMaterial({ color: light, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.1, envMapIntensity: 1.0 });
-      const dome = new THREE.MeshPhysicalMaterial({ color, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 1.2 });
       const sand = new THREE.MeshStandardMaterial({
         color,
         roughness: 0.82,
@@ -93,12 +107,14 @@ export class BucketKit {
         emissive: color,
         emissiveIntensity: 0.1,
       });
-      this.kits.push({ shell, inner, rim, dome, sand, color });
+      const inactive = new THREE.MeshStandardMaterial({
+        color: color.clone().lerp(new THREE.Color('#606a80'), 0.28),
+        roughness: 0.66,
+      });
+      this.kits.push({ shell, inner, rim, sand, inactive, color });
     });
 
     this.shadowMat = new THREE.MeshBasicMaterial({ map: softDot(), color: '#1c2a60', transparent: true, opacity: 0.2, depthWrite: false });
-    this.band = new THREE.MeshPhysicalMaterial({ color: '#5a6279', roughness: 0.5, clearcoat: 0.4 });
-    this.mystery = new THREE.MeshPhysicalMaterial({ color: '#4c4f5c', roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.08, envMapIntensity: 1.2 });
     this.question = new THREE.MeshBasicMaterial({ map: numberTexture('?', '#ffffff', '#14162c'), transparent: true, depthWrite: false });
   }
 
@@ -107,26 +123,27 @@ export class BucketKit {
   }
 }
 
-export type BucketMode = 'open' | 'dome' | 'mystery' | 'belt';
+export type BucketMode = 'open' | 'blocked' | 'mystery' | 'belt';
 
-const TILT_BOARD = 0.86;
-const TILT_BELT = 1.12;
+// Keep the opening readable while exposing more of the front wall.
+const TILT_BOARD = 0.93 - LOWER_STAGE_TILT;
+const TILT_BELT = 1.14 - LOWER_STAGE_TILT;
 
-/** One bucket in the world: an open cup, a closed dome, a mystery dome, or a small belt cup. */
+/** A tapered cup that can be concealed under a mystery lid or move onto the conveyor. */
 export class BucketActor {
   readonly root = new THREE.Group();
   /** Everything that tilts toward the camera. */
   readonly body = new THREE.Group();
   readonly cupGroup = new THREE.Group();
-  readonly domeGroup = new THREE.Group();
-  readonly mysteryGroup = new THREE.Group();
+  private marker: THREE.Mesh<THREE.ExtrudeGeometry, THREE.MeshStandardMaterial>;
   private mound: THREE.Mesh;
   private badge: THREE.Mesh;
   private shadow: THREE.Mesh;
   private questionMark!: THREE.Mesh;
   private labelMat: THREE.MeshBasicMaterial;
   readonly label: THREE.Mesh;
-  mode: BucketMode = 'dome';
+  mode: BucketMode = 'blocked';
+  private assist = false;
   color: number;
   /** 0..1 fill shown by the mound */
   fill = 0;
@@ -138,6 +155,11 @@ export class BucketActor {
   private labelText = '';
   /** extra glow when tappable */
   private glow: THREE.Mesh;
+  /** Light column from the bucket up to the picture: where this bucket can reach sand. */
+  private beam: THREE.Mesh;
+  private beamMat: THREE.MeshBasicMaterial;
+  private beamTarget = 0;
+  private beamNow = 0;
   private glowMat: THREE.MeshBasicMaterial;
   hint = 0;
   /** 0 = flat-on, used to rock the cup around */
@@ -152,40 +174,29 @@ export class BucketActor {
     this.color = color;
     const k = kit.kit(trueColor);
     this.root.add(this.body);
-    this.body.add(this.cupGroup, this.domeGroup, this.mysteryGroup);
+    this.body.add(this.cupGroup);
 
     // open cup
     const shell = new THREE.Mesh(kit.shellGeo, k.shell);
     const inner = new THREE.Mesh(kit.innerGeo, k.inner);
     const rim = new THREE.Mesh(kit.rimGeo, k.rim);
     const outline = new THREE.Mesh(kit.shellGeo, kit.outline);
-    outline.scale.set(1.085, 1.06, 1.085);
+    outline.scale.set(1.04, 1.045, 1.04);
     outline.position.y = -0.02;
     const outlineRim = new THREE.Mesh(kit.rimGeo, kit.outline);
-    outlineRim.scale.set(1.1, 1.5, 1.1);
+    outlineRim.scale.set(1.035, 1.035, 1.035);
     this.cupGroup.add(outline, outlineRim, shell, inner, rim);
+    // A closed bucket sits lower than an open cup and follows the tray angle.
+    this.marker = new THREE.Mesh(kit.markerGeo, k.inactive);
+    this.marker.position.set(0, -0.1, -0.8);
+    this.root.add(this.marker);
     this.mound = new THREE.Mesh(kit.moundGeo, k.sand);
     this.mound.position.y = H / 2 - 0.18;
     this.mound.visible = false;
     this.cupGroup.add(this.mound);
 
-    // closed dome
-    const dome = new THREE.Mesh(kit.domeGeo, k.dome);
-    dome.position.y = 0.08;
-    dome.scale.set(1, 0.78, 1);
-    const band = new THREE.Mesh(kit.bandGeo, kit.band);
-    band.position.y = -0.2;
-    this.domeGroup.add(dome, band);
-
-    // mystery dome
-    const mdome = new THREE.Mesh(kit.domeGeo, kit.mystery);
-    mdome.position.y = 0.08;
-    mdome.scale.set(1, 0.78, 1);
-    const mband = new THREE.Mesh(kit.bandGeo, kit.band);
-    mband.position.y = -0.2;
-    this.mysteryGroup.add(mdome, mband);
-    this.questionMark = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 1.25), kit.question);
-    this.questionMark.position.set(0, 0.28, 1.12);
+    this.questionMark = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 0.92), kit.question);
+    this.questionMark.position.set(0, -0.1, -0.36);
     this.root.add(this.questionMark);
 
     // colour mark for colour-assist
@@ -210,29 +221,44 @@ export class BucketActor {
     this.glow.position.z = -0.8;
     this.root.add(this.glow);
 
+    // The pick-up zone is 15 of the picture's 128 columns wide (LANE.pickRadius).
+    this.beamMat = new THREE.MeshBasicMaterial({ map: beamTexture(), color: '#ffffff', transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+    this.beam = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.9), this.beamMat);
+    this.beam.position.set(0, 1.3, 0.4);
+    this.beam.visible = false;
+    this.root.add(this.beam);
+
     this.labelMat = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false });
-    this.label = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 1.0), this.labelMat);
+    this.label = new THREE.Mesh(new THREE.PlaneGeometry(2.7, 1.35), this.labelMat);
     this.label.visible = false;
-    this.label.position.set(0, -1.05, 0.5);
+    this.label.position.set(0, -1.1, 0.5);
     this.root.add(this.label);
 
-    this.setMode(mystery ? 'mystery' : 'dome');
+    this.setMode(mystery ? 'mystery' : 'blocked');
   }
 
   setMode(mode: BucketMode): void {
     this.mode = mode;
     this.cupGroup.visible = mode === 'open' || mode === 'belt';
-    this.domeGroup.visible = mode === 'dome';
-    this.mysteryGroup.visible = mode === 'mystery';
+    this.marker.visible = !this.cupGroup.visible;
+    this.marker.material = mode === 'mystery' ? this.kit.mystery : this.kit.kit(this.trueColor).inactive;
     this.questionMark.visible = mode === 'mystery';
     this.body.rotation.x = mode === 'belt' ? TILT_BELT : TILT_BOARD;
-    this.shadow.visible = mode !== 'belt';
+    this.shadow.visible = mode === 'open';
+    this.badge.position.z = this.marker.visible ? -0.36 : 1.15;
     this.label.visible = mode === 'belt';
     this.mound.visible = mode === 'belt' && this.fill > 0.01;
+    this.refreshBadge();
   }
 
+  /** Marks help tell colours apart, so they must never show the colour of a bucket that is still hidden. */
   setColorAssist(on: boolean): void {
-    (this.badge.material as THREE.MeshBasicMaterial).opacity = on ? 0.55 : 0;
+    this.assist = on;
+    this.refreshBadge();
+  }
+
+  private refreshBadge(): void {
+    (this.badge.material as THREE.MeshBasicMaterial).opacity = this.assist && this.mode !== 'mystery' ? 0.55 : 0;
   }
 
   /** Set the mound height (0..1). */
@@ -252,6 +278,11 @@ export class BucketActor {
     this.labelMat.needsUpdate = true;
   }
 
+  /** 0 hides the pick-up zone; ~0.2 shows it, ~0.5 while sand is flowing in. */
+  setBeam(target: number): void {
+    this.beamTarget = target;
+  }
+
   /** Squash and stretch kick. Positive stretches vertically first. */
   punch(s = 0.2): void {
     this.vy += s * 16;
@@ -267,11 +298,23 @@ export class BucketActor {
     this.sx += this.vx * dt;
     this.body.scale.set(1 + this.sx, 1 + this.sy, 1 + this.sx * 0.5);
     const pulse = 0.5 + 0.5 * Math.sin(time * 4 + this.root.position.x * 0.7);
-    this.glowMat.opacity = this.hint * (0.16 + 0.2 * pulse);
+    this.glowMat.opacity = this.hint * (0.025 + 0.035 * pulse);
     this.body.rotation.z = this.wobble;
+    this.beamNow += (this.beamTarget - this.beamNow) * (1 - Math.exp(-dt * 10));
+    this.beamMat.opacity = this.beamNow * 0.18;
+    this.beam.visible = this.beamNow > 0.01;
   }
 
+  /** Free per-actor geometry and materials. Their textures (atlas, glow dot, label cache) are shared and stay alive. */
   dispose(): void {
     this.badge.geometry.dispose();
+    (this.badge.material as THREE.Material).dispose();
+    this.questionMark.geometry.dispose();
+    this.glow.geometry.dispose();
+    this.glowMat.dispose();
+    this.beam.geometry.dispose();
+    this.beamMat.dispose();
+    this.label.geometry.dispose();
+    this.labelMat.dispose();
   }
 }

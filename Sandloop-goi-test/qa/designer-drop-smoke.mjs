@@ -1,0 +1,36 @@
+// Chrome có cửa sổ: giả lập kéo-thả một ảnh vào trang → tạo màn mới → tự gen theo tag đang chọn.
+import puppeteer from 'puppeteer-core';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const tag = process.argv[2] ?? 'hard';
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe', headless: false, defaultViewport: { width: 1500, height: 1000 } });
+const page = await browser.newPage();
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e)));
+page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+await page.goto(pathToFileURL(path.resolve('dist-designer/designer.html')).href);
+await page.evaluate(() => localStorage.clear());
+await page.reload();
+await page.waitForSelector('.lv');
+await page.click(`.seg.${tag}`);
+await page.evaluate(async () => {
+  const cv = document.createElement('canvas'); cv.width = 96; cv.height = 96;
+  const g = cv.getContext('2d');
+  const sky = g.createLinearGradient(0, 0, 0, 96); sky.addColorStop(0, '#1269CC'); sky.addColorStop(1, '#07EDFF');
+  g.fillStyle = sky; g.fillRect(0, 0, 96, 96);
+  g.fillStyle = '#FFF31C'; g.beginPath(); g.arc(48, 40, 22, 0, 7); g.fill();
+  g.fillStyle = '#FF7A45'; g.fillRect(0, 64, 96, 12);
+  g.fillStyle = '#FFB235'; g.fillRect(0, 76, 96, 20);
+  g.fillStyle = '#3FFB3F'; g.fillRect(10, 52, 14, 24);
+  const blob = await new Promise((r) => cv.toBlob(r, 'image/png'));
+  const dt = new DataTransfer(); dt.items.add(new File([blob], 'anh-keo-tha.png', { type: 'image/png' }));
+  window.dispatchEvent(new DragEvent('dragenter', { dataTransfer: dt, bubbles: true }));
+  window.dispatchEvent(new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+});
+await page.waitForFunction(() => document.querySelector('#bGen').textContent.includes('Dừng'), { timeout: 10000 });
+console.log('đang gen sau khi thả:', await page.$eval('#list .lv.on', (e) => e.innerText.replace(/\n/g, ' ')));
+await page.waitForFunction(() => !document.querySelector('#bGen').textContent.includes('Dừng'), { timeout: 240000 });
+await new Promise((r) => setTimeout(r, 1500));
+console.log((await page.$eval('#result', (e) => e.innerText)).split('\n').slice(0, 6).join('\n'));
+console.log('errors:', JSON.stringify(errors));
+await browser.close();

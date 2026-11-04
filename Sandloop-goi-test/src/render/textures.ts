@@ -229,8 +229,11 @@ export function labelTexture(text: string, fg = '#ffffff', stroke = '#1c2350'): 
   return t;
 }
 
-/** Soft round sprite for dust, glows and bokeh. */
+let softDotTex: THREE.CanvasTexture | null = null;
+
+/** Soft round sprite for dust, glows and bokeh. One shared texture: never dispose it. */
 export function softDot(): THREE.CanvasTexture {
+  if (softDotTex) return softDotTex;
   const [c, g] = canvas(64, 64);
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   grad.addColorStop(0, 'rgba(255,255,255,1)');
@@ -240,6 +243,7 @@ export function softDot(): THREE.CanvasTexture {
   g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  softDotTex = t;
   return t;
 }
 
@@ -297,5 +301,30 @@ export function glassSheen(): THREE.CanvasTexture {
   streak(160, 70, 0.22);
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+let beamTex: THREE.CanvasTexture | null = null;
+
+/** Soft vertical band, brightest at the top (where it meets the picture) and fading at the sides. Shared: never dispose. */
+export function beamTexture(): THREE.CanvasTexture {
+  if (beamTex) return beamTex;
+  const [c, g] = canvas(32, 64);
+  const v = g.createLinearGradient(0, 64, 0, 0);
+  v.addColorStop(0, 'rgba(255,255,255,0)');
+  v.addColorStop(1, 'rgba(255,255,255,1)');
+  g.fillStyle = v;
+  g.fillRect(0, 0, 32, 64);
+  g.globalCompositeOperation = 'destination-in';
+  const h = g.createLinearGradient(0, 0, 32, 0);
+  h.addColorStop(0, 'rgba(0,0,0,0)');
+  h.addColorStop(0.3, 'rgba(0,0,0,1)');
+  h.addColorStop(0.7, 'rgba(0,0,0,1)');
+  h.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = h;
+  g.fillRect(0, 0, 32, 64);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  beamTex = t;
   return t;
 }
