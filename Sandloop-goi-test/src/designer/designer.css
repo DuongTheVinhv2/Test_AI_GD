@@ -134,3 +134,34 @@ body.dragging::after { content: 'Thả ảnh vào đây để tạo màn mới v
 .select.mini { width: auto; padding: 4px 8px; margin: 0; }
 .ghost.export { border-style: solid; border-color: var(--blue, #2d6fd6); color: var(--blue, #2d6fd6); }
 #exportNote { min-height: 18px; margin-top: 6px; }
+
+/* ---- mechanics: tool options, generator list, board pieces ---- */
+.tool { font-size: 14px; padding: 9px 10px; }
+.toolopts { margin-top: 6px; }
+.toolopts .size-row { flex-wrap: wrap; margin: 8px 0 2px; }
+.dirs { display: inline-flex; gap: 4px; }
+.dirbtn { width: 30px; height: 28px; border-radius: 8px; background: var(--tile); font-weight: 800; color: var(--blue); }
+.dirbtn.on { background: var(--blue-2); color: #fff; }
+.gmech { display: grid; gap: 2px; margin-bottom: 8px; }
+.gm { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 30px; }
+.gm .chk { margin: 0; }
+.cell .bucket .mk { position: absolute; left: -6px; top: -8px; min-width: 24px; height: 20px; padding: 0 4px; border-radius: 10px; font-size: 11px; font-weight: 800; line-height: 20px; text-align: center; color: #fff; background: var(--navy); white-space: nowrap; }
+.cell .bucket .mk.frz { background: #4aa8ff; }
+.cell .bucket .mk.key, .cell .bucket .mk.lck { color: #1b2550; }
+.cell .bucket.ice { box-shadow: inset 0 0 0 4px rgba(190, 230, 255, 0.95), inset 0 -4px 0 rgba(0, 0, 0, 0.16); }
+.cell .bucket.locked { filter: saturate(0.5); }
+.cell.mouth { background: #cfe0f3; }
+.mouthbox { display: grid; place-items: center; width: 58px; height: 54px; border-radius: 14px; background: var(--wall); color: #fff; position: relative; }
+.mouthbox .arr { position: absolute; font-size: 16px; font-weight: 800; opacity: 0.9; }
+.mouthbox.dir-u .arr { top: 1px; } .mouthbox.dir-d .arr { bottom: 1px; } .mouthbox.dir-l .arr { left: 4px; } .mouthbox.dir-r .arr { right: 4px; }
+.mouthbox i { width: 22px; height: 22px; border-radius: 50%; border: 3px solid #fff; background: #8aa3c8; }
+.mouthbox i.none { background: transparent; border-style: dashed; opacity: 0.5; }
+.mouthbox b { position: absolute; right: 4px; bottom: 2px; font-size: 12px; }
+.queue { position: absolute; bottom: 2px; left: 4px; right: 4px; display: flex; gap: 2px; justify-content: center; }
+.queue i { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #fff; }
+.cell.rod::before { content: ''; position: absolute; inset: 14px 0; background: repeating-linear-gradient(45deg, #f2b705 0 8px, #3b3b4f 8px 16px); opacity: 0.88; z-index: 2; }
+.cell.rod.rod-head::before { border-radius: 0 14px 14px 0; }
+.rodbar { position: absolute; inset: 0; display: grid; place-items: center; z-index: 3; pointer-events: none; }
+.rodbar span { background: var(--navy); color: #fff; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-weight: 800; }
+
+.cell.rod-u::before, .cell.rod-d::before { inset: 0 20px; }

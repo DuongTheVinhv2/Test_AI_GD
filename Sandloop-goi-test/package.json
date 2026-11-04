@@ -10,7 +10,9 @@
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "typecheck": "tsc --noEmit",
     "designer": "tsc --noEmit && vite build --config vite.designer.config.ts",
-    "designer:dev": "vite --config vite.designer.config.ts --host 127.0.0.1 --port 5174 --open /designer.html"
+    "designer:dev": "vite --config vite.designer.config.ts --host 127.0.0.1 --port 5174 --open /designer.html",
+    "analytics": "tsc --noEmit && vite build --config vite.analytics.config.ts",
+    "analytics:dev": "vite --config vite.analytics.config.ts --host 127.0.0.1 --port 5175 --open /analytics.html"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

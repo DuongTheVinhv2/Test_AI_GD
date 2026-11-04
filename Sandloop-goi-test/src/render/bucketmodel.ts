@@ -3,7 +3,7 @@ import { SAND_COLORS } from '../core/palette';
 import { LOWER_STAGE_TILT } from './layout3d';
 import type { Mats } from './materials';
 import { slabGeometry } from './shapes';
-import { beamTexture, labelTexture, numberTexture, softDot, type GlyphAtlas } from './textures';
+import { beamTexture, emblemTexture, labelTexture, numberTexture, PAIR_TINTS, softDot, type GlyphAtlas } from './textures';
 
 /** Bucket diameter is 2.0 world units; everything below is expressed in that scale. */
 const R_TOP = 1.0;
@@ -51,6 +51,9 @@ export class BucketKit {
   readonly shadowMat: THREE.MeshBasicMaterial;
   readonly mystery = new THREE.MeshStandardMaterial({ color: '#505d76', roughness: 0.62 });
   readonly question: THREE.MeshBasicMaterial;
+  /** Closed-bucket slabs for the frozen and locked mechanics. */
+  readonly frozen = new THREE.MeshStandardMaterial({ color: '#9fd8f5', roughness: 0.18, metalness: 0.05, emissive: '#3b8fc4', emissiveIntensity: 0.25 });
+  readonly locked = new THREE.MeshStandardMaterial({ color: '#59607a', roughness: 0.5, metalness: 0.35 });
   private kits: ColorKit[] = [];
 
   constructor(
@@ -123,11 +126,15 @@ export class BucketKit {
   }
 }
 
-export type BucketMode = 'open' | 'blocked' | 'mystery' | 'belt';
+export type BucketMode = 'open' | 'blocked' | 'mystery' | 'belt' | 'frozen' | 'locked';
 
 // Keep the opening readable while exposing more of the front wall.
 const TILT_BOARD = 0.93 - LOWER_STAGE_TILT;
 const TILT_BELT = 1.14 - LOWER_STAGE_TILT;
+export const BELT_MOUTH_OFFSET = {
+  y: Math.cos(TILT_BELT) * H / 2,
+  z: Math.sin(TILT_BELT) * H / 2,
+};
 
 /** A tapered cup that can be concealed under a mystery lid or move onto the conveyor. */
 export class BucketActor {
@@ -140,6 +147,12 @@ export class BucketActor {
   private badge: THREE.Mesh;
   private shadow: THREE.Mesh;
   private questionMark!: THREE.Mesh;
+  /** Icon of a mechanic: ice count, padlock, or the key a key bucket carries. */
+  private emblem: THREE.Mesh;
+  private emblemMat: THREE.MeshBasicMaterial;
+  private emblemKey = '';
+  /** What the emblem shows: set by setStatus. */
+  private status = { frozen: 0, key: 0, lock: 0, locked: false };
   private labelMat: THREE.MeshBasicMaterial;
   readonly label: THREE.Mesh;
   mode: BucketMode = 'blocked';
@@ -199,6 +212,11 @@ export class BucketActor {
     this.questionMark.position.set(0, -0.1, -0.36);
     this.root.add(this.questionMark);
 
+    this.emblemMat = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false });
+    this.emblem = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.emblemMat);
+    this.emblem.visible = false;
+    this.root.add(this.emblem);
+
     // colour mark for colour-assist
     this.badge = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.62), new THREE.MeshBasicMaterial({ map: kit.atlas.texture, transparent: true, opacity: 0.0, depthWrite: false }));
     const [u0, v0, u1, v1] = kit.atlas.rect(trueColor);
@@ -241,7 +259,7 @@ export class BucketActor {
     this.mode = mode;
     this.cupGroup.visible = mode === 'open' || mode === 'belt';
     this.marker.visible = !this.cupGroup.visible;
-    this.marker.material = mode === 'mystery' ? this.kit.mystery : this.kit.kit(this.trueColor).inactive;
+    this.marker.material = mode === 'mystery' ? this.kit.mystery : mode === 'frozen' ? this.kit.frozen : mode === 'locked' ? this.kit.locked : this.kit.kit(this.trueColor).inactive;
     this.questionMark.visible = mode === 'mystery';
     this.body.rotation.x = mode === 'belt' ? TILT_BELT : TILT_BOARD;
     this.shadow.visible = mode === 'open';
@@ -249,6 +267,51 @@ export class BucketActor {
     this.label.visible = mode === 'belt';
     this.mound.visible = mode === 'belt' && this.fill > 0.01;
     this.refreshBadge();
+    this.refreshEmblem();
+  }
+
+  /** Tell the actor which mechanic it carries (frozen count, key / lock pair, locked or already opened). */
+  setStatus(st: { frozen: number; key: number; lock: number; locked: boolean }): void {
+    const a = this.status;
+    if (a.frozen === st.frozen && a.key === st.key && a.lock === st.lock && a.locked === st.locked) return;
+    this.status = { ...st };
+    this.refreshEmblem();
+  }
+
+  private refreshEmblem(): void {
+    const st = this.status;
+    let kind: 'ice' | 'lock' | 'key' | null = null;
+    let tint = '#ffffff';
+    let text = '';
+    if (this.mode === 'frozen' && st.frozen > 0) {
+      kind = 'ice';
+      text = String(st.frozen);
+    } else if (this.mode === 'locked' && st.locked) {
+      kind = 'lock';
+      tint = PAIR_TINTS[(st.lock - 1) % PAIR_TINTS.length];
+    } else if (st.key > 0 && (this.mode === 'open' || this.mode === 'blocked' || this.mode === 'belt')) {
+      kind = 'key';
+      tint = PAIR_TINTS[(st.key - 1) % PAIR_TINTS.length];
+    }
+    const id = kind ? `${kind}|${tint}|${text}` : '';
+    if (id !== this.emblemKey) {
+      this.emblemKey = id;
+      if (kind) {
+        this.emblemMat.map = emblemTexture(kind, tint, text);
+        this.emblemMat.needsUpdate = true;
+      }
+    }
+    this.emblem.visible = kind !== null;
+    if (!kind) return;
+    if (kind === 'key') {
+      // a badge on the cup's front corner, so a key bucket reads as a bucket first
+      this.emblem.position.set(0.74, this.mode === 'belt' ? 0.72 : 0.5, 1.3);
+      this.emblem.scale.setScalar(0.95);
+    } else {
+      // over the face of the closed slab
+      this.emblem.position.set(0, -0.1, -0.3);
+      this.emblem.scale.setScalar(kind === 'ice' ? 1.35 : 1.15);
+    }
   }
 
   /** Marks help tell colours apart, so they must never show the colour of a bucket that is still hidden. */
@@ -309,6 +372,8 @@ export class BucketActor {
   dispose(): void {
     this.badge.geometry.dispose();
     (this.badge.material as THREE.Material).dispose();
+    this.emblem.geometry.dispose();
+    this.emblemMat.dispose();
     this.questionMark.geometry.dispose();
     this.glow.geometry.dispose();
     this.glowMat.dispose();

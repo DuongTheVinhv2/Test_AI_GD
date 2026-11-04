@@ -328,3 +328,165 @@ export function beamTexture(): THREE.CanvasTexture {
   beamTex = t;
   return t;
 }
+
+// ------------------------------------------------------------ mechanic emblems
+
+/** Tints of the key / lock pairs (pair 1 gold, 2 pink, 3 sky, 4 violet). */
+export const PAIR_TINTS = ['#ffd23a', '#ff7ab8', '#6fe3ff', '#b48cff'];
+
+const emblemCache = new Map<string, THREE.CanvasTexture>();
+
+/** A painted icon for the mechanics: a key, a padlock, or an ice block with the number of pops left in it. */
+export function emblemTexture(kind: 'key' | 'lock' | 'ice', tint: string, text = ''): THREE.CanvasTexture {
+  const id = `${kind}|${tint}|${text}`;
+  const hit = emblemCache.get(id);
+  if (hit) return hit;
+  const [c, g] = canvas(192, 192);
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  const dark = '#1b2447';
+  if (kind === 'key') {
+    g.translate(96, 96);
+    g.rotate(-Math.PI / 4);
+    // shaft, teeth, bow
+    g.strokeStyle = dark;
+    g.fillStyle = tint;
+    g.lineWidth = 30;
+    g.beginPath();
+    g.moveTo(-6, 0);
+    g.lineTo(76, 0);
+    g.stroke();
+    g.beginPath();
+    g.moveTo(50, 0);
+    g.lineTo(50, 26);
+    g.moveTo(74, 0);
+    g.lineTo(74, 22);
+    g.stroke();
+    g.lineWidth = 18;
+    g.strokeStyle = tint;
+    g.beginPath();
+    g.moveTo(-6, 0);
+    g.lineTo(76, 0);
+    g.stroke();
+    g.beginPath();
+    g.moveTo(50, 0);
+    g.lineTo(50, 24);
+    g.moveTo(74, 0);
+    g.lineTo(74, 20);
+    g.stroke();
+    g.fillStyle = tint;
+    g.strokeStyle = dark;
+    g.lineWidth = 12;
+    g.beginPath();
+    g.arc(-34, 0, 34, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.fillStyle = dark;
+    g.beginPath();
+    g.arc(-34, 0, 12, 0, Math.PI * 2);
+    g.fill();
+  } else if (kind === 'lock') {
+    g.strokeStyle = dark;
+    g.lineWidth = 34;
+    g.beginPath();
+    g.arc(96, 78, 36, Math.PI, 0);
+    g.lineTo(132, 100);
+    g.moveTo(60, 78);
+    g.lineTo(60, 100);
+    g.stroke();
+    g.strokeStyle = '#d9e2f4';
+    g.lineWidth = 16;
+    g.beginPath();
+    g.arc(96, 78, 36, Math.PI, 0);
+    g.lineTo(132, 100);
+    g.moveTo(60, 78);
+    g.lineTo(60, 100);
+    g.stroke();
+    g.fillStyle = tint;
+    g.strokeStyle = dark;
+    g.lineWidth = 12;
+    g.beginPath();
+    g.roundRect(34, 90, 124, 90, 20);
+    g.fill();
+    g.stroke();
+    g.fillStyle = dark;
+    g.beginPath();
+    g.arc(96, 128, 14, 0, Math.PI * 2);
+    g.fill();
+    g.fillRect(90, 130, 12, 28);
+  } else {
+    // ice block: pale rounded square with a faint snowflake, the count on top
+    g.fillStyle = 'rgba(214, 242, 255, 0.92)';
+    g.strokeStyle = '#2e7fb8';
+    g.lineWidth = 10;
+    g.beginPath();
+    g.roundRect(20, 20, 152, 152, 36);
+    g.fill();
+    g.stroke();
+    g.strokeStyle = 'rgba(70, 150, 210, 0.45)';
+    g.lineWidth = 7;
+    for (let i = 0; i < 3; i++) {
+      const a = (i * Math.PI) / 3;
+      g.beginPath();
+      g.moveTo(96 + Math.cos(a) * 62, 96 + Math.sin(a) * 62);
+      g.lineTo(96 - Math.cos(a) * 62, 96 - Math.sin(a) * 62);
+      g.stroke();
+    }
+    g.font = '800 96px "Unbounded", system-ui, sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.lineWidth = 16;
+    g.strokeStyle = '#1d5f9a';
+    g.strokeText(text, 96, 102);
+    g.fillStyle = '#ffffff';
+    g.fillText(text, 96, 102);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 4;
+  emblemCache.set(id, t);
+  return t;
+}
+
+let arrowTex: THREE.CanvasTexture | null = null;
+
+/** A fat arrow pointing up (rotate the plane to point it elsewhere). */
+export function arrowTexture(): THREE.CanvasTexture {
+  if (arrowTex) return arrowTex;
+  const [c, g] = canvas(128, 128);
+  g.lineJoin = 'round';
+  g.beginPath();
+  g.moveTo(64, 14);
+  g.lineTo(112, 66);
+  g.lineTo(82, 66);
+  g.lineTo(82, 114);
+  g.lineTo(46, 114);
+  g.lineTo(46, 66);
+  g.lineTo(16, 66);
+  g.closePath();
+  g.fillStyle = '#ffffff';
+  g.strokeStyle = '#1b2447';
+  g.lineWidth = 9;
+  g.stroke();
+  g.fill();
+  arrowTex = new THREE.CanvasTexture(c);
+  arrowTex.colorSpace = THREE.SRGBColorSpace;
+  arrowTex.anisotropy = 4;
+  return arrowTex;
+}
+
+let ringTex: THREE.CanvasTexture | null = null;
+
+/** A white ring, tinted with the material colour. */
+export function ringTexture(): THREE.CanvasTexture {
+  if (ringTex) return ringTex;
+  const [c, g] = canvas(128, 128);
+  g.strokeStyle = '#ffffff';
+  g.lineWidth = 16;
+  g.beginPath();
+  g.arc(64, 64, 52, 0, Math.PI * 2);
+  g.stroke();
+  ringTex = new THREE.CanvasTexture(c);
+  ringTex.colorSpace = THREE.SRGBColorSpace;
+  return ringTex;
+}

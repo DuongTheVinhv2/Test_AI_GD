@@ -6,7 +6,7 @@ import type { GridBucket } from '../core/grid';
 import { SAND_COLORS } from '../core/palette';
 import { BeltView } from './beltview';
 import { BoardView } from './boardview';
-import { BucketActor, BucketKit } from './bucketmodel';
+import { BELT_MOUTH_OFFSET, BucketActor, BucketKit } from './bucketmodel';
 import * as fx from './fx';
 import { BELT, BOARD, LOWER_STAGE_TILT, WINDOW, windowToWorldX } from './layout3d';
 import type { Mats } from './materials';
@@ -19,8 +19,13 @@ import { WindowView } from './windowview';
 
 export type SceneEvent =
   | { type: 'tap' }
-  | { type: 'reject'; reason: 'blocked' | 'full' }
+  | { type: 'reject'; reason: 'blocked' | 'frozen' | 'locked' | 'full' }
   | { type: 'reveal' }
+  | { type: 'spawn' }
+  | { type: 'rod' }
+  | { type: 'thaw' }
+  | { type: 'unlock' }
+  | { type: 'pull' }
   | { type: 'land' }
   | { type: 'pick'; n: number; intensity: number }
   | { type: 'complete'; color: number }
@@ -30,6 +35,8 @@ export type SceneEvent =
 
 const BOARD_SCALE = 0.89;
 const BELT_SCALE = 0.59;
+const BELT_RIDE_Y = BELT.y + 0.16;
+const BELT_RIDE_Z = 0.9;
 /** Where on screen a lane phase (seconds of belt travel) is. */
 const laneXAt = (phase: number) => windowToWorldX(laneX(phase / LANE_TIME));
 /** A bucket that found no gap yet hovers above the lane at the picture's left edge. */
@@ -44,6 +51,8 @@ export class PlayScene {
   game!: Game;
   onEvent: ((e: SceneEvent) => void) | null = null;
   colorAssist = false;
+  /** A booster is waiting for a target: board buckets (Hand Pick) or belt buckets (Sand Pull) glow. */
+  boostMode: 'none' | 'pick' | 'pull' = 'none';
 
   private kit: BucketKit;
   private sky = new Sky();
@@ -58,6 +67,8 @@ export class PlayScene {
   private popped = new Set<number>();
   private vanish = new Map<number, number>();
   private lastOpen = new Map<number, boolean>();
+  /** seconds since a tunnel pushed this bucket out */
+  private spawning = new Map<number, number>();
   private lastSpeed = 0;
   private time = 0;
   private winTimer = 0;
@@ -108,7 +119,8 @@ export class PlayScene {
     for (const b of game.board.buckets) {
       const actor = new BucketActor(this.kit, b.color, b.color, b.mystery);
       actor.setColorAssist(this.colorAssist);
-      actor.root.visible = true;
+      actor.setStatus(b);
+      actor.root.visible = !b.queued;
       this.lowerStage.add(actor.root);
       this.actors.set(b.id, actor);
     }
@@ -116,6 +128,7 @@ export class PlayScene {
     this.popped.clear();
     this.vanish.clear();
     this.lastOpen.clear();
+    this.spawning.clear();
     this.particles.clear();
     this.winTimer = 0;
     this.celebrated = false;
@@ -168,6 +181,25 @@ export class PlayScene {
     return b ? b.id : null;
   }
 
+  private readonly tmpV = new THREE.Vector3();
+
+  /** Belt bucket nearest to a screen position (within reach of a finger), if any can take Sand Pull. */
+  pickBelt(clientX: number, clientY: number): number | null {
+    let best: number | null = null;
+    let bestD = 56;
+    for (const bb of this.game.pullTargets()) {
+      const a = this.actors.get(bb.id);
+      if (!a) continue;
+      const p = a.root.getWorldPosition(this.tmpV).project(this.stage.camera);
+      const d = Math.hypot((p.x + 1) * window.innerWidth / 2 - clientX, (1 - p.y) * window.innerHeight / 2 - clientY);
+      if (d < bestD) {
+        bestD = d;
+        best = bb.id;
+      }
+    }
+    return best;
+  }
+
   tap(id: number): void {
     this.game.tap(id);
   }
@@ -209,28 +241,72 @@ export class PlayScene {
         this.emit({ type: 'land' });
         break;
       }
+      case 'spawn': {
+        this.spawning.set(e.bucket.id, 0.0001);
+        this.emit({ type: 'spawn' });
+        break;
+      }
+      case 'rod': {
+        const p = this.board.cellCenter(e.rod.cells[e.rod.cells.length - 1].r, e.rod.cells[e.rod.cells.length - 1].c);
+        fx.dust(this.particles, p.x, p.y, '#d9b27a', 8, 0.5, 1.2, 0.5, 1.1);
+        this.emit({ type: 'rod' });
+        break;
+      }
+      case 'thaw': {
+        const a = this.actors.get(e.bucket.id);
+        const p = a?.root.position;
+        a?.setStatus(e.bucket);
+        a?.punch(e.left === 0 ? 0.5 : 0.25);
+        if (p) fx.sparkle(this.particles, p.x, p.y, e.left === 0 ? '#bfeaff' : '#e8fbff', e.left === 0 ? 14 : 4, 1.4, 1.2);
+        if (e.left === 0) this.shakes.set(e.bucket.id, 0.0001);
+        this.emit({ type: 'thaw' });
+        break;
+      }
+      case 'pull': {
+        const a = this.actors.get(e.bucket.id);
+        const p = a?.root.position;
+        a?.punch(0.5);
+        if (p) fx.sparkle(this.particles, p.x, p.y, SAND_COLORS[e.bucket.color].hex, 16, 1.6, 1.2);
+        this.emit({ type: 'pull' });
+        break;
+      }
+      case 'unlock': {
+        const a = this.actors.get(e.bucket.id);
+        const p = a?.root.position;
+        a?.setStatus(e.bucket);
+        a?.punch(0.5);
+        if (p) fx.sparkle(this.particles, p.x, p.y, '#ffe27a', 14, 1.5, 1.2);
+        this.emit({ type: 'unlock' });
+        break;
+      }
       case 'pick': {
         // A stream of grains falls from the picked columns into the mouth of the bucket that is catching them.
-        const a = this.actors.get(e.bucket.id);
         const sim = this.game.sand;
         const n = Math.min(6, e.xs.length);
-        const mouthY = BELT.y + 0.16 + 0.25;
-        const fall = WINDOW.bottom - 0.05 - mouthY;
-        const life = Math.sqrt((2 * fall) / 16) * 1.05;
+        // The picture faces the camera, while the particles and bucket ride in the tilted space.
+        const source = this.lowerStage.worldToLocal(new THREE.Vector3(0, WINDOW.bottom - 0.05, 0.32));
+        const mouthY = BELT_RIDE_Y + BELT_MOUTH_OFFSET.y * BELT_SCALE;
+        const mouthZ = BELT_RIDE_Z + BELT_MOUTH_OFFSET.z * BELT_SCALE;
+        const gravity = 16;
+        const launchSpeed = 3;
+        const fall = Math.max(0.01, source.y - mouthY);
+        const life = (Math.sqrt(launchSpeed ** 2 + 2 * gravity * fall) - launchSpeed) / gravity;
+        const arrival = Math.min(1, e.bucket.s + life / LANE_TIME);
+        const mouthX = windowToWorldX(laneX(arrival));
         for (let i = 0; i < n; i++) {
           const x = windowToWorldX((e.xs[Math.floor((i * e.xs.length) / n)] + 0.5) / sim.w);
-          const bx = a ? a.root.position.x : x;
           this.particles.spawn({
             kind: 'grain',
             x,
-            y: WINDOW.bottom - 0.05,
-            z: 0.7,
-            vx: (bx - x + (Math.random() - 0.5) * 0.35) / life,
-            vy: -0.4,
+            y: source.y,
+            z: source.z,
+            vx: (mouthX - x + (Math.random() - 0.5) * 0.18) / life,
+            vy: -launchSpeed,
+            vz: (mouthZ - source.z) / life,
             life,
             size: 0.1 + Math.random() * 0.05,
             color: e.bucket.color,
-            gravity: 16,
+            gravity,
           });
         }
         this.pickSound += e.n;
@@ -270,6 +346,7 @@ export class PlayScene {
     const g = this.game;
     g.advance(dt);
     this.sync(dt, time);
+    this.board.update(dt);
     this.win.update(time);
     const speed = g.status === 'lost' ? 0 : LANE.speed * WINDOW.size;
     this.lastSpeed += (speed - this.lastSpeed) * (1 - Math.exp(-dt * 6));
@@ -322,6 +399,10 @@ export class PlayScene {
     for (const gb of g.board.buckets) {
       const a = this.actors.get(gb.id)!;
       const bb = beltById.get(gb.id);
+      if (gb.queued) {
+        a.root.visible = false;
+        continue;
+      }
       if (bb) {
         this.syncBelt(a, bb, dt, time);
         const vt = this.vanish.get(gb.id);
@@ -345,7 +426,8 @@ export class PlayScene {
     a.root.visible = true;
     const open = g.board.isOpen(gb);
     const was = this.lastOpen.get(gb.id);
-    const mode = gb.mystery && !gb.revealed ? 'mystery' : open ? 'open' : 'blocked';
+    const mode = gb.mystery && !gb.revealed ? 'mystery' : gb.frozen > 0 ? 'frozen' : gb.locked ? 'locked' : open ? 'open' : 'blocked';
+    a.setStatus(gb);
     if (a.mode !== mode) {
       a.setMode(mode);
       if (mode === 'open' && was === false) a.punch(0.3);
@@ -358,7 +440,23 @@ export class PlayScene {
     const bob = open && g.status === 'playing' ? Math.sin(time * 2.6 + gb.c * 1.7 + gb.r) * 0.04 : 0;
     a.root.position.set(c.x + sx, c.y + 0.1 + bob, 0.95);
     a.root.scale.setScalar(BOARD_SCALE);
-    a.hint += ((open && g.slotsUsed < g.slots && g.status === 'playing' ? 1 : 0) - a.hint) * (1 - Math.exp(-dt * 8));
+    // Just pushed out of a tunnel: slide from the mouth to its tile while growing.
+    const sp = this.spawning.get(gb.id);
+    if (sp !== undefined) {
+      const n = sp + dt;
+      const k = clamp01(n / 0.4);
+      const tn = g.board.tunnels[gb.tunnel];
+      if (tn) {
+        const m = this.board.cellCenter(tn.r, tn.c);
+        const e = ease(k);
+        a.root.position.set(m.x + (c.x - m.x) * e, m.y + 0.1 + (c.y - m.y) * e, 0.95 + (1 - e) * 0.2);
+        a.root.scale.setScalar(BOARD_SCALE * (0.35 + 0.65 * e));
+      }
+      if (n >= 0.4) this.spawning.delete(gb.id);
+      else this.spawning.set(gb.id, n);
+    }
+    const want = this.boostMode === 'pick' ? (gb.frozen === 0 && !gb.locked ? 6 : 0) : open && g.slotsUsed < g.slots && g.status === 'playing' ? 1 : 0;
+    a.hint += (want - a.hint) * (1 - Math.exp(-dt * 8));
     a.wobble = sx * 1.5;
     a.setFill(0);
     a.setColorAssist(this.colorAssist);
@@ -378,8 +476,9 @@ export class PlayScene {
         const u = clamp01(bb.t / bb.flyTime);
         // Follow the path over the board, then hop onto the lane at the spot it will land on.
         const pts = bb.path.map((p) => this.board.cellCenter(p.r, p.c));
-        const landX = laneXAt(bb.landPhase >= 0 ? bb.landPhase : LAND_FROM);
-        const landY = bb.landPhase >= 0 ? BELT.y + 0.16 : HOVER_Y;
+        const viaReturn = bb.returnExitAt !== undefined;
+        const landX = laneXAt(viaReturn ? LANE_TIME : bb.landPhase >= 0 ? bb.landPhase : LAND_FROM);
+        const landY = viaReturn ? BELT.y + 1.25 : bb.landPhase >= 0 ? BELT.y + 0.16 : HOVER_Y;
         const topCell = pts[pts.length - 1];
         const route = [...pts, { x: topCell.x + (landX - topCell.x) * 0.3, y: BELT.y - 1.5 }, { x: landX, y: landY }];
         // length-parametrised position
@@ -404,13 +503,18 @@ export class PlayScene {
         }
         const sc = BOARD_SCALE + (BELT_SCALE - BOARD_SCALE) * ease(u);
         a.root.position.set(px, py + 0.1, 1.3);
-        a.root.scale.setScalar(sc);
+        const tuck = viaReturn ? ease(clamp01((u - 0.75) / 0.25)) : 0;
+        a.root.scale.setScalar(Math.max(0.001, sc * (1 - tuck)));
         a.label.visible = false;
         a.setFill(0);
         void gb;
         break;
       }
       case 'waiting': {
+        if (bb.returnExitAt !== undefined) {
+          a.root.visible = false;
+          break;
+        }
         // No gap on the belt yet: hover over the lane's left edge and drop in as soon as one comes.
         a.setMode('belt');
         a.label.visible = false;
@@ -428,12 +532,13 @@ export class PlayScene {
         // A bucket that has just dropped in settles with a small bounce.
         const sinceLand = bb.t - (bb.landPhase >= 0 ? bb.landPhase : LAND_FROM);
         const settle = bb.laps === 0 && sinceLand >= 0 && sinceLand < 0.25 ? Math.sin((sinceLand / 0.25) * Math.PI) * 0.12 * (1 - sinceLand / 0.25) : 0;
-        a.root.position.set(x, BELT.y + 0.16 + settle, 0.9);
+        a.root.position.set(x, BELT_RIDE_Y + settle, BELT_RIDE_Z);
         a.root.scale.setScalar(Math.max(0.001, sc));
         a.setFill(fillF);
         a.setLabel(fillF * 100);
         a.wobble = Math.sin(time * 5 + bb.id) * 0.02;
         // Show where this bucket reaches while it is under the picture and still has room.
+        if (this.boostMode === 'pull' && bb.fill < bb.cap && this.game.sand.counts[bb.color] > 0) a.hint = 6;
         const underPicture = bb.s > 0.09 && bb.s < 0.91 && bb.fill < bb.cap;
         a.setBeam(underPicture ? (bb.lastPick > 0 ? 0.55 : 0.2) : 0);
         break;

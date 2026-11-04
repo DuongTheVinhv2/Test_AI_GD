@@ -2,7 +2,8 @@ import type { Game } from '../core/game';
 import { Rng } from '../core/rng';
 import { COLOR_COUNT } from '../core/palette';
 import { analyze, confirmedTaps, prepare, SEED, type Analysis, type DesignLevel } from './analyze';
-import { cloneDef } from './model';
+import { cloneDef, rodCells } from './model';
+import { addStructure, applyMarks, bucketCells, fillQueues, NO_MECH, type MechCounts } from './mech';
 import { legalMoves, newGame, randomPlayout, search, searchWin, settle } from './solver';
 import { HIT, type PathReport } from './fast';
 import { tune } from './tune';
@@ -30,6 +31,10 @@ export interface GenOptions {
   runs?: number;
   /** Share of the floor cells that get a bucket (1 = every cell, like the harder levels of the game). */
   fill?: number;
+  /** Mechanics to put in the level (see MechCounts); the board and the buckets are generated around them. */
+  mech?: MechCounts;
+  /** Layouts (layoutSig) that must not come out again, so every Gen gives a different level. */
+  avoid?: string[];
   /** Use the old random-restart generator (kept for comparison). */
   legacy?: boolean;
   onProgress?: (text: string) => void;
@@ -122,7 +127,9 @@ function place(def: DesignLevel, slots: Slot[], p: Params, rng: Rng, lanes = fal
   d.buckets = Array.from({ length: rows }, () => Array(cols).fill('.'));
   // floor cells, nearest to the belt first. Row 0 touches the belt; it is filled last so the first row of buckets is row 1.
   const byRow: number[][] = Array.from({ length: rows }, () => []);
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (d.tiles[r][c] === 'o') byRow[r].push(c);
+  const under = new Set<string>();
+  for (const rod of d.rods ?? []) for (const x of rodCells(rod)) under.add(`${x.r},${x.c}`);
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) if (d.tiles[r][c] === 'o' && !under.has(`${r},${c}`)) byRow[r].push(c);
   const order: [number, number][] = [];
   const rowOrder = [...Array(rows - 1).keys()].map((i) => i + 1).concat(rows > 1 && !lanes ? [0] : []);
   for (const r of rowOrder) for (const c of rng.shuffle(byRow[r].slice())) order.push([r, c]);
@@ -262,7 +269,12 @@ function generateFast(base: DesignLevel, o: GenOptions): GenResult {
     return { def: base, analysis: null, matched: false, tries: 0, note: `Bàn chỉ có ${floor} ô sàn mà tranh có ${colors.size} màu — cần ít nhất ${colors.size} ô.` };
   }
   const fillRatio = Math.min(1, Math.max(0.3, o.fill ?? 1));
-  const modes: boolean[] = o.tag === 'easy' ? (o.shape ? [false, true] : [false]) : o.shape ? [true, false] : [false];
+  const mech = o.mech ?? NO_MECH;
+  // tunnels and rods need the board as it is: no carving into corridors
+  const structural = mech.tunnel > 0 || mech.rod > 0;
+  const modes: boolean[] = structural ? [false] : o.tag === 'easy' ? (o.shape ? [false, true] : [false]) : o.shape ? [true, false] : [false];
+  const avoid = new Set(o.avoid ?? []);
+  const structNotes = new Set<string>();
   const verified = new Set<string>();
   let best: { def: DesignLevel; v: Verdict; rep: PathReport | null } | null = null;
   let bestAny = false;
@@ -275,14 +287,25 @@ function generateFast(base: DesignLevel, o: GenOptions): GenResult {
     const left = o.budgetMs - (performance.now() - t0);
     const slice = Math.max(4000, Math.min(left * 0.55, o.budgetMs * 0.3));
     const seeds: DesignLevel[] = [];
-    const cap = lanes ? laneColumns(base.tiles[0].length).length * ((o.tag === 'easy' ? base.tiles.length : Math.max(base.tiles.length, LANE_ROWS)) - 1) : floor;
+    const laneCap = laneColumns(base.tiles[0].length).length * ((o.tag === 'easy' ? base.tiles.length : Math.max(base.tiles.length, LANE_ROWS)) - 1);
     for (let i = 0; i < 8; i++) {
-      const p: Params = { ...TAG_START[o.tag], tag: o.tag, bait: o.tag === 'easy' ? 0 : Math.min(1, Math.max(0, TAG_START[o.tag].bait + (rng.next() - 0.5) * 0.5)) };
-      const total = Math.max(colors.size, Math.min(cap, Math.round(cap * fillRatio)));
-      seeds.push(place(base, planBuckets(g0, o.layer, total), p, rng, lanes));
+      const p: Params = { ...TAG_START[o.tag], tag: o.tag, mystery: o.mech ? 0 : TAG_START[o.tag].mystery, bait: o.tag === 'easy' ? 0 : Math.min(1, Math.max(0, TAG_START[o.tag].bait + (rng.next() - 0.5) * 0.5)) };
+      // tunnels and rods first (they change the board), then the buckets around them, then the marks on the buckets
+      const st = lanes ? { def: base, queueCount: 0, notes: [] as string[] } : addStructure(base, mech, rng);
+      for (const n of st.notes) structNotes.add(n);
+      const cap = lanes ? laneCap : bucketCells(st.def).length;
+      const total = Math.max(colors.size - st.queueCount > 0 ? colors.size - st.queueCount : 1, Math.min(cap, Math.round(cap * fillRatio)));
+      const all = planBuckets(g0, o.layer, total + st.queueCount);
+      // buckets in a tunnel arrive late, so they take the colours that are uncovered last
+      const queueSlots = st.queueCount ? all.slice().sort((a, b) => b.wave - a.wave).slice(0, st.queueCount) : [];
+      const boardSlots = all.filter((x) => !queueSlots.includes(x));
+      const cand = place(st.def, boardSlots, p, rng, lanes);
+      fillQueues(cand, rng.shuffle(queueSlots.map((x) => x.color)));
+      for (const n of applyMarks(cand, mech, rng)) structNotes.add(n);
+      seeds.push(cand);
     }
     o.onProgress?.(`Vòng ${rounds}: ${lanes ? 'hành lang' : 'bàn tự do'} — tối ưu ${Math.round(slice / 1000)}s trên mô hình nhanh`);
-    const res = tune(seeds, { tag: o.tag, layer: o.layer, budgetMs: slice, rng, lanes, shape: !!o.shape, fixedCount: true, wantHits: 4, onProgress: o.onProgress });
+    const res = tune(seeds, { tag: o.tag, layer: o.layer, budgetMs: slice, rng, lanes, shape: !!o.shape, fixedCount: true, wantHits: 4, avoid, onProgress: o.onProgress });
     evals += res.evals;
     if (res.cands.length && (!bestFast || res.cands[0].score < bestFast.score)) bestFast = { def: res.cands[0].def, rep: res.cands[0].rep, score: res.cands[0].score };
     o.onProgress?.(`Mô hình nhanh: ${res.evals} bố cục trong ${Math.round(res.ms / 1000)}s, tốt nhất ${res.cands[0]?.score.toFixed(1) ?? '—'}. Kiểm lại bằng game thật…`);
@@ -294,7 +317,9 @@ function generateFast(base: DesignLevel, o: GenOptions): GenResult {
       verified.add(cand.sig);
       tries++;
       const left2 = o.budgetMs - (performance.now() - t0);
-      const v = evaluate(cand.def, o.tag, o.layer, runs, rng.int(1_000_000), Math.max(1500, Math.min(10000, left2 * 0.5)));
+      let v: Verdict;
+      try { v = evaluate(cand.def, o.tag, o.layer, runs, rng.int(1_000_000), Math.max(1500, Math.min(10000, left2 * 0.5))); }
+      catch { v = { wins: 0, stucks: 0, runs: 0, fit: 99, ok: false, hasWin: false }; }
       o.onProgress?.(`Kiểm game thật #${tries}: điểm mô hình ${cand.score.toFixed(1)} → thắng ${v.wins}/${v.runs}, kẹt ${v.stucks}${v.ok ? ' — khớp' : v.rndOk ? ' — chưa tìm thấy lời giải' : ''}`);
       if (!best || v.fit < best.v.fit) best = { def: cand.def, v, rep: cand.rep };
       if (v.ok) { matched = true; best = { def: cand.def, v, rep: cand.rep }; break; }
@@ -307,7 +332,7 @@ function generateFast(base: DesignLevel, o: GenOptions): GenResult {
     analysis = analyze(def, { layer: o.layer, playouts: 6, winMs: 20000, stuckMs: 6000, known: best && best.def === def && best.v.runs >= 3 ? { wins: best.v.wins, stucks: best.v.stucks, runs: best.v.runs, stuckTaps: best.v.stuckTaps ?? null } : undefined });
   }
   const rep = (best?.rep ?? bestFast?.rep) ?? null;
-  const hints = matched ? [] : explain(rep, o.tag, colors.size);
+  const hints = [...structNotes, ...(matched ? [] : explain(rep, o.tag, colors.size))];
   let note: string;
   if (matched) note = `Khớp độ khó sau ${tries} lần kiểm (${rounds} vòng, ${evals} bố cục thử trên mô hình nhanh).`;
   else note = `Chưa khớp sau ${rounds} vòng (${evals} bố cục thử, ${tries} lần kiểm game thật) — giữ bố cục gần nhất.`;

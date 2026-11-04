@@ -13,6 +13,8 @@ export interface CheatState {
   unlocked: number;
   coins: number;
   maxLevel: number;
+  /** Hearts now ("∞" when an infinite boost is running). */
+  hearts: string;
 }
 
 export interface CheatApi {
@@ -21,6 +23,14 @@ export interface CheatApi {
   unlockAll(): void;
   setCoins(n: number): void;
   resetSave(): void;
+  /** Đặt số tim (0..max). */
+  setHearts(n: number): void;
+  /** Cộng thời gian tim vô hạn (phút). */
+  addInfinite(minutes: number): void;
+  /** Cộng n mỗi loại booster. */
+  addBoosters(n: number): void;
+  /** Cho phép nhận lại quà ngày. */
+  resetDaily(): void;
   /** Gọi khi bảng vừa mở (để game tự tạm dừng). */
   opened(): void;
 }
@@ -138,9 +148,25 @@ export class CheatPanel {
     const rowMisc = make('div', 'row');
     rowMisc.append(unlock, reset);
 
+    // Hàng 5: tim và quà ngày
+    const h0 = make('button', 'b', 'Hearts 0');
+    h0.onclick = () => this.apply(() => this.api.setHearts(0), 'Tim = 0');
+    const hFull = make('button', 'b', 'Hearts full');
+    hFull.onclick = () => this.apply(() => this.api.setHearts(99), 'Tim đầy');
+    const hInf = make('button', 'b', '+30m ∞');
+    hInf.onclick = () => this.apply(() => this.api.addInfinite(30), 'Tim vô hạn +30 phút');
+    const rowHearts = make('div', 'row');
+    rowHearts.append(h0, hFull, hInf);
+    const boost = make('button', 'b', '+3 boosters');
+    boost.onclick = () => this.apply(() => this.api.addBoosters(3), 'Mỗi booster +3');
+    const daily = make('button', 'b', 'Reset daily gift');
+    daily.onclick = () => this.apply(() => this.api.resetDaily(), 'Đã cho nhận lại quà ngày');
+    const rowDaily = make('div', 'row');
+    rowDaily.append(boost, daily);
+
     const hint = make('div', 'hint', `Phím tắt: ${[...HOTKEY].map((c) => c.toUpperCase()).join(' → ')}  (bấm lần lượt để mở/đóng), hoặc Esc để đóng`);
 
-    this.root.append(bar, this.info, rowLevel, rowStep, rowCoins, rowMisc, this.msg, hint);
+    this.root.append(bar, this.info, rowLevel, rowStep, rowCoins, rowMisc, rowHearts, rowDaily, this.msg, hint);
     document.body.appendChild(this.root);
 
     // Pha capture để Esc đóng bảng trước, không lọt xuống phần tạm dừng/tiếp tục của game.
@@ -239,9 +265,15 @@ export class CheatPanel {
     this.refresh();
   }
 
+  private apply(fn: () => void, text: string): void {
+    fn();
+    this.say(text);
+    this.refresh();
+  }
+
   private refresh(): void {
     const s = this.api.state();
-    this.info.textContent = `Level ${s.level}/${s.maxLevel}  ·  Mở khóa tới ${s.unlocked}  ·  Xu ${s.coins}`;
+    this.info.textContent = `Level ${s.level}/${s.maxLevel}  ·  Mở khóa tới ${s.unlocked}  ·  Xu ${s.coins}  ·  Tim ${s.hearts}`;
   }
 
   private say(text: string): void {

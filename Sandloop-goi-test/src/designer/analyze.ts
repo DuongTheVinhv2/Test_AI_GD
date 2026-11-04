@@ -3,6 +3,7 @@ import { LANE } from '../core/config';
 import { Game } from '../core/game';
 import type { LevelDef } from '../core/levels';
 import { COLOR_COUNT } from '../core/palette';
+import { mechProblems } from './model';
 import { Puzzle, analyzeGraph, fastSearch, sandFor, summarize, type PathSummary } from './fast';
 import { applyMove, legalMoves, newGame, randomPlayout, search, searchWin, settle, verdict, type Verdict } from './solver';
 
@@ -43,6 +44,8 @@ export function prepare(level: DesignLevel, layer: number): LevelDef {
 
 /** Problems that make a level unplayable no matter how it is solved. */
 export function validate(level: DesignLevel, layer: number): string[] {
+  const mech = mechProblems(level);
+  if (mech.length) return mech;
   const out: string[] = [];
   const def = prepare(level, layer);
   const g = new Game(def, SEED);
@@ -86,16 +89,18 @@ export interface AnalyzeOptions {
 export function analyze(level: DesignLevel, o: AnalyzeOptions): Analysis {
   const t0 = performance.now();
   const notes: string[] = [];
+  const res: Analysis = {
+    difficulty: 'unknown', runs: 0, wins: 0, stucks: 0, winTaps: null, stuckTaps: null,
+    openAtStart: 0, colorsAtStart: 0, notes, ms: 0,
+  };
+  const problems = validate(level, o.layer);
+  if (problems.length) { notes.push(...problems); res.difficulty = 'unsolvable'; res.ms = performance.now() - t0; return res; }
   const def = prepare(level, o.layer);
   const g = newGame(def, SEED);
   settle(g);
   const start = legalMoves(g);
-  const res: Analysis = {
-    difficulty: 'unknown', runs: 0, wins: 0, stucks: 0, winTaps: null, stuckTaps: null,
-    openAtStart: start.length, colorsAtStart: new Set(start.map((m) => m.color)).size, notes, ms: 0,
-  };
-  const problems = validate(level, o.layer);
-  if (problems.length) { notes.push(...problems); res.difficulty = 'unsolvable'; res.ms = performance.now() - t0; return res; }
+  res.openAtStart = start.length;
+  res.colorsAtStart = new Set(start.map((m) => m.color)).size;
 
   try {
     res.path = summarize(analyzeGraph(new Puzzle(def, sandFor(def.art, o.layer)), { maxNodes: 20000, maxMs: 2500 }));

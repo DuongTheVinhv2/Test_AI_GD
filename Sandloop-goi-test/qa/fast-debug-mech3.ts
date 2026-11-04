@@ -1,0 +1,13 @@
+import { LEVELS } from '../src/core/levels';
+import { prepare, type DesignLevel } from '../src/designer/analyze';
+import { newGame, settle } from '../src/designer/solver';
+const def = prepare(LEVELS[10] as DesignLevel, 4);
+const real = newGame(def, 1); settle(real);
+console.log('c9 before', real.sand.counts[9]);
+real.tap(1); settle(real);
+console.log('after tap#1: c7', real.sand.counts[7], 'belt', real.belt.map((b) => `#${b.id}c${b.color} ${b.fill}/${b.cap} ${b.state}`).join(' '));
+console.log('open', real.openBuckets().map((b) => b.id).join(','));
+const n = real.openBuckets().find((b) => b.color === 9);
+console.log('c9 open bucket', n?.id, 'queued', real.board.buckets.filter((b) => b.color === 9).map((b) => `#${b.id}${b.queued ? 'q' : ''}${b.gone ? 'g' : ''}`).join(' '));
+real.tap(4); settle(real);
+console.log('after tap#4: c9', real.sand.counts[9], 'belt', real.belt.map((b) => `#${b.id}c${b.color} ${b.fill}/${b.cap} ${b.state}`).join(' '), 'stats', JSON.stringify(real.stats));

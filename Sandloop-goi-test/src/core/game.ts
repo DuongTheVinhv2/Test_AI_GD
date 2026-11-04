@@ -1,8 +1,9 @@
 import { ART_SOURCES } from './art-data';
-import { DEFAULT_SLOTS, GRAINS_PER_PIXEL, LANE, SIM_DT, SIM_HZ } from './config';
-import { Board, type Cell, type GridBucket } from './grid';
+import { BOARD_CELL_IN_WINDOWS, DEFAULT_SLOTS, FINAL_STRETCH, GRAINS_PER_PIXEL, LANE, SIM_DT, SIM_HZ } from './config';
+import { Board, type BoardChanges, type Cell, type GridBucket, type Rod } from './grid';
 import type { LevelDef } from './levels';
 import { COLOR_COUNT } from './palette';
+import { Rng } from './rng';
 import { SandSim } from './sand';
 
 export type BeltState = 'flying' | 'waiting' | 'lane' | 'return' | 'pop';
@@ -28,19 +29,31 @@ export interface BeltBucket {
   slot: number;
   /** Seconds travelled round the belt loop (0 = left end of the lane); valid once it is on the belt. */
   phase: number;
-  /** Lane phase it drops onto when the flight ends, or -1 when its slot is not on the lane yet (it then hovers and waits). */
+  /** Lane phase of the first entry, or -1 when the slot has not been assigned. */
   landPhase: number;
+  /** Absolute simulation time when this bucket's reserved slot emerges from the left cap. */
+  returnExitAt?: number;
   /** grains picked in the last second, for UI */
   lastPick: number;
   tapTick: number;
 }
 
-export type TapResult = 'ok' | 'blocked' | 'full' | 'over';
+export type TapResult = 'ok' | 'blocked' | 'frozen' | 'locked' | 'full' | 'over';
 
 export type GameEvent =
   | { type: 'tap'; bucket: BeltBucket; path: Cell[] }
-  | { type: 'reject'; reason: 'blocked' | 'full'; id: number }
+  | { type: 'reject'; reason: 'blocked' | 'frozen' | 'locked' | 'full'; id: number }
   | { type: 'reveal'; bucket: GridBucket }
+  /** A tunnel pushed a bucket onto the board. */
+  | { type: 'spawn'; bucket: GridBucket }
+  /** A gate bar slid out. */
+  | { type: 'rod'; rod: Rod }
+  /** A frozen bucket counted down (`left` > 0) or thawed (`left` = 0). */
+  | { type: 'thaw'; bucket: GridBucket; left: number }
+  /** A key bucket popped and this lock bucket opened. */
+  | { type: 'unlock'; bucket: GridBucket; key: GridBucket }
+  /** Sand Pull pulled grains straight out of the picture into a belt bucket. */
+  | { type: 'pull'; bucket: BeltBucket; n: number }
   | { type: 'land'; bucket: BeltBucket }
   | { type: 'pick'; bucket: BeltBucket; n: number; xs: number[] }
   | { type: 'complete'; bucket: BeltBucket }
@@ -70,12 +83,17 @@ export const LOSE_AFTER = 3.2;
 export const LANE_TIME = (LANE.x1 - LANE.x0) / LANE.speed;
 export const LOOP_TIME = LANE_TIME + LANE.returnTime;
 /**
- * A tapped bucket drops straight onto a free belt slot that is on the lane right now: anywhere between the picture's left
- * edge and a bit before the right end. The five slots are evenly spaced, so neighbours are always LOOP_TIME / 5 apart
- * (one empty bucket width at the default speed) and five buckets always fit.
+ * A tapped bucket drops onto a free belt slot that is on the lane when its flight ends, anywhere on the visible lane (it
+ * slides out of the end caps, so even the very ends work), and it picks the slot nearest to where it leaves the board, so it
+ * drops roughly straight down instead of always sliding in from the left. The five slots are evenly spaced, so neighbours
+ * are always LOOP_TIME / 5 apart (one empty bucket width at the default speed) and five buckets always fit.
  */
-export const LAND_FROM = (-LANE.x0 / (LANE.x1 - LANE.x0)) * LANE_TIME;
-export const LAND_TO = LANE_TIME - 1.0;
+export const LAND_FROM = 0.15;
+export const LAND_TO = LANE_TIME - 0.3;
+/** Where over the sand window (0..1) a board column sits. */
+export function columnWindowX(col: number, cols: number): number {
+  return 0.5 + (col - (cols - 1) / 2) * BOARD_CELL_IN_WINDOWS;
+}
 
 export function laneX(s: number): number {
   return LANE.x0 + s * (LANE.x1 - LANE.x0);
@@ -131,7 +149,7 @@ export class Game {
 
   constructor(readonly level: LevelDef, seed = 1) {
     this.sand = SandSim.fromArt(ART_SOURCES[level.art], GRAINS_PER_PIXEL, seed * 2654435761);
-    this.board = new Board(level.tiles, level.buckets);
+    this.board = new Board(level.tiles, level.buckets, level.tunnels, level.rods);
     this.slots = level.slots ?? DEFAULT_SLOTS;
     this.fillSeconds = level.fillSeconds;
     this.caps = bucketCaps(this.board, this.sand.counts);
@@ -148,6 +166,16 @@ export class Game {
     let n = 0;
     for (const b of this.belt) if (b.state !== 'pop') n++;
     return n;
+  }
+
+  /** Buckets that still have to fill: on the board or riding the belt, not yet popped. */
+  get bucketsLeft(): number {
+    return this.board.buckets.length - this.delivered;
+  }
+
+  /** The last FINAL_STRETCH.buckets buckets of a level big enough to have an "earlier part". */
+  get finalStretch(): boolean {
+    return this.status === 'playing' && this.board.buckets.length > FINAL_STRETCH.buckets && this.bucketsLeft <= FINAL_STRETCH.buckets;
   }
 
   /** Share of the picture's sand already collected, 0..1. */
@@ -178,19 +206,27 @@ export class Game {
   tap(id: number): TapResult {
     if (this.status !== 'playing') return 'over';
     const gb = this.board.buckets[id];
-    if (!gb || gb.gone) return 'blocked';
-    const path = this.board.isOpen(gb) ? this.board.path(gb) : null;
+    if (!gb || gb.gone || gb.queued) return 'blocked';
+    const why = this.board.stuckReason(gb);
+    const path = why === null ? this.board.path(gb) : null;
     if (!path) {
+      const reason = why === 'frozen' || why === 'locked' ? why : 'blocked';
       this.stats.rejects++;
-      this.emit({ type: 'reject', reason: 'blocked', id });
-      return 'blocked';
+      this.emit({ type: 'reject', reason, id });
+      return reason;
     }
     if (this.slotsUsed >= this.slots) {
       this.stats.rejects++;
       this.emit({ type: 'reject', reason: 'full', id });
       return 'full';
     }
-    const uncovered = this.board.remove(gb);
+    return this.launch(gb, path);
+  }
+
+  /** Put a board bucket on the belt along `path` (its own tile alone when a booster skips the walk). */
+  private launch(gb: GridBucket, path: Cell[]): TapResult {
+    const id = gb.id;
+    const changes = this.board.remove(gb);
     const flyTime = LANE.flyBase + LANE.flyPerCell * (path.length - 1);
     const b: BeltBucket = {
       id,
@@ -210,13 +246,89 @@ export class Game {
       lastPick: 0,
       tapTick: this.ticks,
     };
-    this.reserveSlot(b);
+    this.reserveSlot(b, columnWindowX(path[path.length - 1].c, this.board.cols));
     this.belt.push(b);
     this.stats.taps++;
     this.stats.maxOnBelt = Math.max(this.stats.maxOnBelt, this.slotsUsed);
     this.emit({ type: 'tap', bucket: b, path });
-    for (const m of uncovered) this.emit({ type: 'reveal', bucket: m });
+    this.emitChanges(changes);
     return 'ok';
+  }
+
+  // ---------------------------------------------------------------- boosters
+
+  /** Hand Pick: any free bucket goes straight onto the belt, however it is boxed in. Frozen and locked ones stay put. */
+  handPick(id: number): TapResult {
+    if (this.status !== 'playing') return 'over';
+    const gb = this.board.buckets[id];
+    if (!gb || gb.gone || gb.queued) return 'blocked';
+    if (gb.frozen > 0) return 'frozen';
+    if (gb.locked) return 'locked';
+    if (this.slotsUsed >= this.slots) return 'full';
+    if (gb.mystery && !gb.revealed) {
+      gb.revealed = true;
+      this.emit({ type: 'reveal', bucket: gb });
+    }
+    return this.launch(gb, [{ r: gb.r, c: gb.c }]);
+  }
+
+  /** Belt buckets Sand Pull can fill: riding the lane, with room left, and sand of their colour still in the picture. */
+  pullTargets(): BeltBucket[] {
+    return this.belt.filter((b) => b.state === 'lane' && b.fill < b.cap && this.sand.counts[b.color] > 0);
+  }
+
+  /** Sand Pull: fill a belt bucket from anywhere in the picture. Returns the grains taken (0 = it could not). */
+  sandPull(id: number): number {
+    if (this.status !== 'playing') return 0;
+    const b = this.pullTargets().find((x) => x.id === id);
+    if (!b) return 0;
+    this.xs.length = 0;
+    const n = this.sand.take(b.color, b.cap - b.fill, this.xs);
+    if (!n) return 0;
+    b.fill += n;
+    b.lastPick = n;
+    this.stuckFor = 0;
+    this.warned = false;
+    this.emit({ type: 'pick', bucket: b, n, xs: this.xs });
+    this.emit({ type: 'pull', bucket: b, n });
+    if (b.fill >= b.cap) this.completeBucket(b);
+    return n;
+  }
+
+  /**
+   * Shuffle: the plain buckets still on the board (no `?`, ice, key, lock, nor any still inside a tunnel) swap colours at
+   * random, carrying their size with the colour so every colour keeps exactly its sand. At least one bucket that can be
+   * tapped now ends up a different colour. Returns false when there is nothing to shuffle.
+   */
+  shuffleBoard(): boolean {
+    if (this.status !== 'playing') return false;
+    const ids = this.board.buckets.filter((b) => !b.gone && !b.queued && !b.mystery && b.frozen === 0 && b.key === 0 && b.lock === 0).map((b) => b.id);
+    if (new Set(ids.map((i) => this.board.buckets[i].color)).size < 2) return false;
+    const openBefore = this.board.openBuckets().map((b) => b.id).filter((i) => ids.includes(i));
+    const rng = new Rng(this.ticks * 31 + 7);
+    const colors = ids.map((i) => this.board.buckets[i].color);
+    const sizes = ids.map((i) => this.caps[i]);
+    for (let attempt = 0; attempt < 30; attempt++) {
+      const order = ids.map((_, k) => k);
+      for (let k = order.length - 1; k > 0; k--) {
+        const j = rng.int(k + 1);
+        [order[k], order[j]] = [order[j], order[k]];
+      }
+      const changed = openBefore.some((id) => colors[order[ids.indexOf(id)]] !== this.board.buckets[id].color);
+      if (!changed && attempt < 29) continue;
+      ids.forEach((id, k) => {
+        this.board.buckets[id].color = colors[order[k]];
+        this.caps[id] = sizes[order[k]];
+      });
+      return true;
+    }
+    return false;
+  }
+
+  private emitChanges(c: BoardChanges): void {
+    for (const rod of c.rodsOpened) this.emit({ type: 'rod', rod });
+    for (const b of c.spawned) this.emit({ type: 'spawn', bucket: b });
+    for (const m of c.revealed) this.emit({ type: 'reveal', bucket: m });
   }
 
   /**
@@ -288,7 +400,8 @@ export class Game {
         case 'flying':
           if (b.t >= b.flyTime) {
             const ph = b.slot >= 0 ? this.slotPhase(b.slot) : -1;
-            if (ph >= LAND_FROM && ph <= LAND_TO) this.land(b, ph);
+            // A direct arrival may be a fraction of a step early.
+            if (b.returnExitAt === undefined && ph >= LAND_FROM - 0.03 && ph <= LAND_TO) this.land(b, Math.max(ph, LAND_FROM));
             else {
               b.state = 'waiting';
               b.t = 0;
@@ -372,38 +485,85 @@ export class Game {
     this.emit({ type: 'land', bucket: b });
   }
 
+  /** Seconds until `slot` is free of the buckets that hold it: 0 when it is empty, the rest of the pop when a finished bucket is leaving, Infinity when a bucket is still using it. */
+  private slotBusyFor(slot: number): number {
+    let busy = 0;
+    for (const o of this.belt) {
+      if (o.slot !== slot) continue;
+      if (o.state !== 'pop') return Infinity;
+      busy = Math.max(busy, LANE.popTime - o.t);
+    }
+    return busy;
+  }
+
   /**
-   * Reserve the free slot that will be on the lane, furthest left, when the flight ends, and remember where it will be.
-   * If no free slot is on the lane by then the bucket takes the one that reaches the left end soonest and hovers until then.
+   * Reserve a free slot and remember where it will be when the flight ends. Any free slot will do, not just the one
+   * nearest the left end: if it is on the lane when the flight ends the bucket takes the one closest to `srcX`, where it
+   * leaves the board, so it drops roughly straight down. Without `srcX` (free play) it takes the leftmost one, which has
+   * the longest ride ahead. If the next free slot is on the return leg, send the bucket through the caps.
    */
-  private reserveSlot(b: BeltBucket): void {
+  private reserveSlot(b: BeltBucket, srcX?: number): void {
     let best = -1;
     let bestPhase = Infinity;
+    let bestScore = Infinity;
+    let bestFly = b.flyTime;
     let soon = -1;
-    let soonWait = Infinity;
+    let soonFly = Infinity;
+    let soonViaReturn = false;
     for (let k = 0; k < this.slots; k++) {
-      if (this.slotTaken(k)) continue;
-      const ph = this.slotPhase(k, this.time + b.flyTime);
+      const busy = this.slotBusyFor(k);
+      if (busy === Infinity) continue;
+      const fly = Math.max(b.flyTime, busy);
+      const ph = this.slotPhase(k, this.time + fly);
       if (ph >= LAND_FROM && ph <= LAND_TO) {
-        if (ph < bestPhase) {
+        const score = srcX === undefined ? ph : Math.abs(laneX(ph / LANE_TIME) - srcX);
+        if (score < bestScore - 1e-9 || (Math.abs(score - bestScore) <= 1e-9 && ph < bestPhase)) {
           best = k;
           bestPhase = ph;
+          bestScore = score;
+          bestFly = fly;
         }
       } else {
-        const wait = ph < LAND_FROM ? LAND_FROM - ph : LOOP_TIME - ph + LAND_FROM;
-        if (wait < soonWait) {
+        const total = fly + (ph < LAND_FROM ? LAND_FROM - ph : LOOP_TIME - ph + LAND_FROM);
+        if (total < soonFly) {
           soon = k;
-          soonWait = wait;
+          soonFly = total;
+          soonViaReturn = ph > LAND_TO;
         }
       }
     }
     if (best >= 0) {
       b.slot = best;
       b.landPhase = bestPhase;
-    } else b.slot = soon;
+      b.flyTime = bestFly;
+    } else if (soon >= 0) {
+      b.slot = soon;
+      b.landPhase = soonViaReturn ? 0 : LAND_FROM;
+      if (soonViaReturn) {
+        const riders = this.belt.filter((o) => o.state !== 'pop');
+        let exitAt = this.time + soonFly - LAND_FROM;
+        // With a full visible train, use the first pass of the spare slot after the tail has returned.
+        if (riders.length > 0 && riders.length === this.slots - 1 && riders.every((o) => o.state === 'lane')) {
+          const tailExit = Math.max(...riders.map((o) => this.time + LOOP_TIME - this.slotPhase(o.slot)));
+          if (exitAt < tailExit) exitAt += LOOP_TIME;
+        }
+        b.returnExitAt = exitAt;
+        let nextCapArrival = Infinity;
+        for (const rider of riders) {
+          if (rider.state === 'lane' || rider.state === 'return') {
+            nextCapArrival = Math.min(nextCapArrival, Math.max(0, LANE_TIME - this.slotPhase(rider.slot)));
+          }
+        }
+        // Join when the front bucket reaches the right cap, with time to disappear before the slot emerges.
+        const beforeExit = exitAt - this.time - SIM_DT;
+        b.flyTime = Math.max(b.flyTime, Math.min(nextCapArrival, beforeExit));
+      } else {
+        b.flyTime = soonFly;
+      }
+    }
   }
 
-  /** A hovering bucket drops in once its slot is on the lane (or, with no slot yet, once any free slot is). Oldest tap first. */
+  /** A waiting bucket boards as soon as its slot reaches the entry. Oldest tap first. */
   private boardWaiting(): void {
     const waiting = this.belt.filter((o) => o.state === 'waiting').sort((a, b) => a.tapTick - b.tapTick || a.id - b.id);
     for (const b of waiting) {
@@ -418,8 +578,9 @@ export class Game {
         }
       }
       if (b.slot < 0) continue;
+      if (b.returnExitAt !== undefined && this.time < b.returnExitAt) continue;
       const ph = this.slotPhase(b.slot);
-      if (ph >= LAND_FROM && ph <= LAND_TO) this.land(b, ph);
+      if (ph >= (b.returnExitAt === undefined ? LAND_FROM : 0) && ph <= LAND_TO) this.land(b, ph);
     }
   }
 
@@ -430,6 +591,12 @@ export class Game {
     this.stats.completed++;
     if (b.laps === 0) this.stats.firstPass++;
     this.emit({ type: 'complete', bucket: b });
+    // A pop is what melts frozen buckets and what a key bucket is for.
+    const gb = this.board.buckets[b.id];
+    const r = this.board.onPop(gb);
+    for (const f of r.ticked) this.emit({ type: 'thaw', bucket: f, left: f.frozen });
+    for (const f of r.thawed) this.emit({ type: 'thaw', bucket: f, left: 0 });
+    for (const l of r.unlocked) this.emit({ type: 'unlock', bucket: l, key: gb });
   }
 
   /** A level is lost when nothing on the belt can pick anything up and the player cannot add anything useful. */
@@ -440,7 +607,7 @@ export class Game {
       return;
     }
     const ex = this.exposure();
-    const pending = this.belt.some((b) => b.state !== 'pop' && (b.state === 'flying' || ex[b.color] > 0));
+    const pending = this.belt.some((b) => b.state !== 'pop' && (b.state === 'flying' || b.state === 'waiting' || ex[b.color] > 0));
     if (pending) {
       this.stuckFor = 0;
       this.warned = false;
@@ -450,6 +617,13 @@ export class Game {
     if (canAct) {
       this.stuckFor = 0;
       this.warned = false;
+      return;
+    }
+    // Nothing left to wait for: a frozen bucket only thaws when others pop, so when none can, it thaws now. A level
+    // is never lost to a countdown alone.
+    if (this.board.hasFrozen()) {
+      for (const f of this.board.thawAll()) this.emit({ type: 'thaw', bucket: f, left: 0 });
+      this.stuckFor = 0;
       return;
     }
     this.stuckFor += elapsed;
@@ -471,7 +645,7 @@ export class Game {
     set('board', this.board.clone());
     set('belt', this.belt.map((b) => ({ ...b, path: b.path })));
     set('slots', this.slots);
-    set('caps', this.caps);
+    set('caps', this.caps.slice());
     (g as unknown as { pool: number[][] }).pool = this.pool.map((p) => p.slice());
     (g as unknown as { fillSeconds: number }).fillSeconds = this.fillSeconds;
     g.time = this.time;

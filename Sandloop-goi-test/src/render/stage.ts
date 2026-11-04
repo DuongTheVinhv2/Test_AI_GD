@@ -5,7 +5,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { BOARD, LOWER_STAGE_TILT, STAGE } from './layout3d';
+import { BOARD, LOWER_STAGE_TILT, STAGE, WINDOW } from './layout3d';
 
 const GradeShader = {
   name: 'GradeShader',
@@ -72,9 +72,9 @@ export class Stage {
   private frameTimes: number[] = [];
   private lastQualityChange = 0;
   readonly fov = 24;
-  /** World-space shift of the framing, positive moves the board up on screen. */
-  private frameShiftY = 0;
+  private cameraY = -0.1;
   private boardRows = 5;
+  private boosterDock?: HTMLElement;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     const renderer = (this.renderer = new THREE.WebGLRenderer({
@@ -133,16 +133,34 @@ export class Stage {
     const aspect = w / h;
     this.camera.aspect = aspect;
     // Fit the whole board: limited by width on tall screens, by height on wide ones.
+    this.fitCamera();
+  }
+
+  setBoosterDock(dock: HTMLElement): void {
+    this.boosterDock = dock;
+    this.fitCamera();
+  }
+
+  private fitCamera(): void {
+    const h = window.innerHeight;
     const t = Math.tan(THREE.MathUtils.degToRad(this.fov / 2));
-    // The view is centred on `centre`; make sure the bottom edge of the last board row (plus a margin) is inside it.
-    // Boards of up to 5 rows keep the reference framing, taller ones zoom out just enough.
-    const centre = this.frameShiftY * 0.9 - 0.1;
-    const boardBottom = BOARD.top - this.boardRows * BOARD.cell - 0.9;
+    // Fit the tilted tray lip, with room for the camera kick and bucket shadows.
+    const boardBottom = BOARD.top - this.boardRows * BOARD.cell - 0.7;
     const bottomY = boardBottom * Math.cos(LOWER_STAGE_TILT);
     const bottomDepth = boardBottom * Math.sin(LOWER_STAGE_TILT);
-    const needH = Math.max(STAGE.h / 2 / t, (centre - bottomY) / t + bottomDepth);
-    const needW = STAGE.w / 2 / (t * aspect);
-    this.baseDist = Math.max(needH, needW);
+    const dockTop = this.boosterDock?.getBoundingClientRect().top ?? h;
+    const bottomSlope = t * (2 * (dockTop - 8) / h - 1);
+    const topSlope = t * (1 - 2 * Math.max(54, h * 0.08) / h);
+    const topY = WINDOW.top + WINDOW.frame + 0.4;
+    // Fit both bounds, accounting for the tray being closer to the camera.
+    const needH = (topY - bottomY + bottomSlope * bottomDepth) / (topSlope + bottomSlope);
+    const needW = STAGE.w / 2 / (t * this.camera.aspect);
+    this.baseDist = Math.max(STAGE.h / 2 / t, needH, needW);
+    this.cameraY = THREE.MathUtils.clamp(
+      -0.1,
+      topY - topSlope * this.baseDist,
+      bottomY + bottomSlope * (this.baseDist - bottomDepth),
+    );
     this.camera.updateProjectionMatrix();
   }
 
@@ -150,7 +168,7 @@ export class Stage {
   setBoardRows(rows: number): void {
     if (rows === this.boardRows) return;
     this.boardRows = rows;
-    this.resize();
+    this.fitCamera();
   }
 
   /** Brief camera kick used for impacts. */
@@ -185,7 +203,7 @@ export class Stage {
       sy = Math.cos(this.shakeT * 71) * k;
       this.shake *= Math.exp(-dt * 6);
     }
-    const y = this.frameShiftY * 0.9 - 0.1 + sy;
+    const y = this.cameraY + sy;
     this.camera.position.set(sx, y, this.baseDist);
     this.camera.lookAt(sx, y, 0);
 

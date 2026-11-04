@@ -6,12 +6,15 @@ import { Game, laneX } from '../core/game';
 import { LEVELS } from '../core/levels';
 import { SAND_COLORS, colorHex } from '../core/palette';
 import { analyze, prepare, validate, SEED, type Analysis, type DesignLevel, type Difficulty } from './analyze';
-import { applyTool, artFromImage, blankLevel, cloneDef, levelKey, resize, MAX_COLS, MAX_ROWS, MIN_SIZE, type Tool } from './model';
+import { applyTool, artFromImage, blankLevel, cloneDef, levelKey, resize, rodAt, tunnelAt, DEFAULT_TOOL_OPTIONS, MAX_COLS, MAX_ROWS, MIN_SIZE, type Tool, type ToolOptions } from './model';
+import { isBucketTok, tokInfo } from './tokens';
+import { layoutSig } from './tune';
+import type { Dir } from '../core/grid';
 import { isSettled, settle, verdict, SETTLE_MAX_TICKS } from './solver';
 import PRE from './precomputed.json';
 import type { WorkerRequest } from './worker';
 import type { GenResult, Tag } from './gen';
-import { buildFiles } from './export';
+import { mergeIntoGame, type MergeResult } from './export';
 
 // ───────────────────────────── state ─────────────────────────────
 interface Entry {
@@ -24,6 +27,10 @@ interface Entry {
   tag: Tag | null;
   genNote?: string;
   genHints?: string[];
+  /** Layouts generated before, so the next Gen gives a different one. */
+  genHistory?: string[];
+  /** Id the level has in the game after "Xuất về game". */
+  gameId?: number;
 }
 
 const TAG_TEXT: Record<Tag, string> = { easy: 'Dễ', hard: 'Khó', super: 'Siêu khó' };
@@ -34,6 +41,20 @@ let maxColors = SAND_COLORS.length;
 let allowShape = false;
 let autoGen = false;
 let fillPct = 100;
+let toolOpt: ToolOptions = { ...DEFAULT_TOOL_OPTIONS };
+
+/** Mechanics the generator may use: tick to include, and how many of them the level gets. */
+type MechKey = 'hidden' | 'tunnel' | 'frozen' | 'rod' | 'key';
+const MECH_INFO: Record<MechKey, { label: string; hint: string; max: number }> = {
+  hidden: { label: 'Xô ẩn (?)', hint: 'Số xô ẩn trong màn', max: 12 },
+  tunnel: { label: 'Hầm', hint: 'Số hầm (mỗi hầm chứa 2–3 xô, miệng hầm nằm ngoài rìa bàn)', max: 3 },
+  frozen: { label: 'Xô băng ❄', hint: 'Số xô đóng băng', max: 6 },
+  rod: { label: 'Thanh chắn', hint: 'Số thanh chắn (nằm đè lên các ô sàn)', max: 3 },
+  key: { label: 'Chìa / khóa 🔑', hint: 'Số cặp chìa + khóa', max: 3 },
+};
+const genMech: Record<MechKey, { on: boolean; n: number }> = {
+  hidden: { on: true, n: 3 }, tunnel: { on: false, n: 1 }, frozen: { on: false, n: 2 }, rod: { on: false, n: 1 }, key: { on: false, n: 1 },
+};
 const gen = { running: false, text: '', workers: [] as Worker[], t0: 0 };
 
 const BUILTIN_ARTS = ART_SOURCES.length;
@@ -60,11 +81,11 @@ function save(): void {
       if (e.builtin) {
         const orig = LEVELS.find((l) => `builtin-${l.id}` === e.id)!;
         if (levelKey(e.def, 0) !== levelKey(cloneDef(orig as DesignLevel), 0)) edits[e.id] = { def: e.def, analysis: e.analysis, analysisKey: e.analysisKey };
-      } else custom.push({ id: e.id, def: e.def, analysis: e.analysis, analysisKey: e.analysisKey });
+      } else custom.push({ id: e.id, def: e.def, analysis: e.analysis, analysisKey: e.analysisKey, gameId: e.gameId });
     }
     const tags: Record<string, Tag | null> = {};
     for (const e of entries) tags[e.id] = e.tag;
-    localStorage.setItem(STORE, JSON.stringify({ edits, custom, sel, layer, tags, genSecs, allowShape2: allowShape, autoGen2: autoGen, maxColors, fillPct }));
+    localStorage.setItem(STORE, JSON.stringify({ edits, custom, sel, layer, tags, genSecs, allowShape2: allowShape, autoGen2: autoGen, maxColors, fillPct, genMech }));
   } catch { /* storage may be unavailable */ }
 }
 
@@ -72,7 +93,7 @@ function load(): void {
   try {
     const raw = localStorage.getItem(STORE);
     if (!raw) return;
-    const s = JSON.parse(raw) as { edits: Record<string, Partial<Entry>>; custom: Entry[]; sel: number; layer?: number; tags?: Record<string, Tag | null>; genSecs?: number; allowShape2?: boolean; autoGen2?: boolean; maxColors?: number; fillPct?: number };
+    const s = JSON.parse(raw) as { edits: Record<string, Partial<Entry>>; custom: Entry[]; sel: number; layer?: number; tags?: Record<string, Tag | null>; genSecs?: number; allowShape2?: boolean; autoGen2?: boolean; maxColors?: number; fillPct?: number; genMech?: Partial<Record<MechKey, { on: boolean; n: number }>> };
     for (const e of entries) {
       const ed = s.edits?.[e.id];
       if (ed?.def) { e.def = ed.def; e.analysis = ed.analysis; e.analysisKey = ed.analysisKey; }
@@ -83,6 +104,7 @@ function load(): void {
     if (typeof s.maxColors === 'number') maxColors = Math.min(SAND_COLORS.length, Math.max(2, s.maxColors));
     if (typeof s.allowShape2 === 'boolean') allowShape = s.allowShape2;
     if (typeof s.autoGen2 === 'boolean') autoGen = s.autoGen2;
+    for (const k of Object.keys(genMech) as MechKey[]) { const v = s.genMech?.[k]; if (v && typeof v.n === 'number') genMech[k] = { on: !!v.on, n: Math.min(MECH_INFO[k].max, Math.max(1, v.n)) }; }
     if (typeof s.fillPct === 'number') fillPct = Math.min(100, Math.max(30, s.fillPct));
     if (typeof s.layer === 'number') layer = s.layer;
     if (typeof s.sel === 'number' && s.sel < entries.length) sel = s.sel;
@@ -114,9 +136,12 @@ root.innerHTML = `
       <label class="chk"><input type="checkbox" id="chkShape" /> Cho phép gen đổi hình dạng bàn (khoét ô thành hành lang)</label>
       <label class="chk"><input type="checkbox" id="chkAuto" /> Tự gen ngay khi thả ảnh vào (mặc định tắt)</label>
       <div class="size-row" title="Gen dừng ngay khi tìm được bố cục khớp độ khó. Con số này chỉ là giới hạn trên để không chạy mãi khi tranh không làm được độ khó đã chọn">Gen tối đa <span class="stepper" id="stGen"></span> giây</div>
+      <p class="label" style="margin-top:12px">Cơ chế sẽ gen <span class="t">(tích để dùng, điền số lượng)</span></p>
+      <div class="gmech" id="genMech"></div>
       <button class="btn blue wide" id="bGen">🎲 Gen bài toán xô</button>
       <h3>Công cụ đặt ô</h3>
       <div class="tools" id="tools"></div>
+      <div class="toolopts" id="toolOpts"></div>
       <p class="label" style="margin-top:16px">Màu xô</p>
       <div class="swatches" id="sw"></div>
       <div class="size-row">Bàn: cột <span class="stepper" id="stCols"></span> hàng <span class="stepper" id="stRows"></span></div>
@@ -386,17 +411,34 @@ let lastBoardSig = '';
 let lastBeltSig = '';
 let lastResultSig = '';
 
+const DIR_ARROW: Record<Dir, string> = { u: '↑', d: '↓', l: '←', r: '→' };
+
 function renderConfig(): void {
   const en = cur();
   $('tools').innerHTML = (
-    [['bucket', 'Xô màu'], ['wall', 'Tường'], ['hidden', 'Xô ẩn (?)'], ['erase', 'Xóa ô']] as [Tool, string][]
+    [['bucket', 'Xô màu'], ['wall', 'Tường'], ['hidden', 'Xô ẩn (?)'], ['frozen', 'Xô băng ❄'], ['key', 'Chìa 🔑'], ['lock', 'Khóa 🔒'], ['tunnel', 'Hầm'], ['tunnelq', 'Xô trong hầm'], ['rod', 'Thanh chắn'], ['erase', 'Xóa ô']] as [Tool, string][]
   ).map(([k, t]) => `<button class="tool ${tool === k ? 'on' : ''}" data-tool="${k}">${t}</button>`).join('');
+  const dirs = (['u', 'd', 'l', 'r'] as Dir[]).map((d) => `<button class="dirbtn ${toolOpt.dir === d ? 'on' : ''}" data-dir="${d}">${DIR_ARROW[d]}</button>`).join('');
+  let optsHtml = '';
+  if (tool === 'frozen') optsHtml = `<div class="size-row">Tan sau <span class="stepper" id="stOF"></span> lần pop</div>`;
+  else if (tool === 'key' || tool === 'lock') optsHtml = `<div class="size-row">Cặp số <span class="stepper" id="stOP"></span><span class="t"> (chìa N mở khóa N)</span></div>`;
+  else if (tool === 'tunnel') optsHtml = `<div class="size-row">Hướng miệng hầm <span class="dirs">${dirs}</span></div>`;
+  else if (tool === 'rod') optsHtml = `<div class="size-row">Dài <span class="stepper" id="stOS"></span> ô · hướng đầu thanh <span class="dirs">${dirs}</span></div>`;
+  $('toolOpts').innerHTML = optsHtml;
+  if (tool === 'frozen') stepper($('stOF'), 'ofrozen', toolOpt.frozen);
+  if (tool === 'key' || tool === 'lock') stepper($('stOP'), 'opair', toolOpt.pair);
+  if (tool === 'rod') stepper($('stOS'), 'osize', toolOpt.rodSize);
+  $('genMech').innerHTML = (Object.keys(MECH_INFO) as MechKey[]).map((k) => {
+    const g = genMech[k];
+    return `<div class="gm" title="${MECH_INFO[k].hint}"><label class="chk"><input type="checkbox" data-gm="${k}" ${g.on ? 'checked' : ''} /> ${MECH_INFO[k].label}</label>${g.on ? `<span class="stepper"><button data-st="gm" data-k="${k}" data-d="-1">−</button><b>${g.n}</b><button data-st="gm" data-k="${k}" data-d="1">+</button></span>` : ''}</div>`;
+  }).join('');
 
   const art = artOf(en.def);
   const counts = new Array(SAND_COLORS.length).fill(0);
   for (const row of art.rows) for (const ch of row) counts[parseInt(ch, 36)]++;
   const placed = new Array(SAND_COLORS.length).fill(0);
-  for (const row of en.def.buckets) for (const tk of row) if (tk !== '.' && tk !== ' ') placed[parseInt(tk.replace('?', ''), 36)]++;
+  for (const row of en.def.buckets) for (const tk of row) if (isBucketTok(tk)) placed[tokInfo(tk).color]++;
+  for (const t of en.def.tunnels ?? []) for (const q of t.queue) placed[parseInt(q, 36)]++;
   const present = SAND_COLORS.filter((c) => counts[c.id] > 0);
   if (!present.some((c) => c.id === color) && present.length) color = present[0].id;
   $('sw').innerHTML = present
@@ -446,16 +488,30 @@ function renderList(): void {
   reset.className = en.builtin ? 'ghost' : 'ghost danger';
 }
 
+const PAIR_COLORS = ['#f2b705', '#ff6fa8', '#38b6ff', '#a56cff', '#2fc27a', '#ff8a3d', '#8d99ae', '#e63946', '#3a86ff'];
+
+/** One bucket as the board shows it, with the badge of its mechanic. */
+function bucketHtml(col: number, o: { hidden?: boolean; editHidden?: boolean; frozen?: number; key?: number; lock?: number; locked?: boolean }): string {
+  const bg = o.hidden ? '#8aa3c8' : o.lock && o.locked ? '#9aa3b2' : colorHex(col);
+  let badge = '';
+  if (o.frozen) badge = `<span class="mk frz">❄${o.frozen}</span>`;
+  else if (o.key) badge = `<span class="mk key" style="background:${PAIR_COLORS[(o.key - 1) % PAIR_COLORS.length]}">🔑${o.key}</span>`;
+  else if (o.lock) badge = `<span class="mk lck" style="background:${PAIR_COLORS[(o.lock - 1) % PAIR_COLORS.length]}">${o.locked === false ? '🔓' : '🔒'}${o.lock}</span>`;
+  const cls = ['bucket', o.hidden ? 'hid' : '', o.editHidden ? 'edithid' : '', o.frozen ? 'ice' : '', o.lock && o.locked ? 'locked' : ''].join(' ');
+  return `<div class="${cls}" style="background:${bg}">${o.hidden ? '?' : ''}${badge}</div>`;
+}
+
 function renderBoard(force = false): void {
   const en = cur();
   const def = en.def;
   const g = sess?.game;
+  const board = g?.board;
   const rows = def.tiles.length, cols = def.tiles[0].length;
   const open = new Set<number>(g ? g.openBuckets().map((b) => b.id) : []);
   const pulse = sess?.auto?.pulse ?? -1;
-  const sig = g
-    ? `${rows}x${cols}|${g.board.buckets.map((b) => (b.gone ? 'x' : b.revealed ? 'r' : 'h') + (open.has(b.id) ? 'o' : '')).join('')}|${pulse}`
-    : `${rows}x${cols}|${JSON.stringify([def.tiles, def.buckets])}`;
+  const sig = board
+    ? `${rows}x${cols}|${board.buckets.map((b) => (b.gone ? 'x' : b.queued ? 'q' : b.revealed ? 'r' : 'h') + b.frozen + (b.locked ? 'L' : '') + (open.has(b.id) ? 'o' : '')).join('')}|${board.rods.map((r) => (r.open ? 1 : 0)).join('')}|${board.tunnels.map((t) => t.queue.length).join(',')}|${pulse}`
+    : `${rows}x${cols}|${JSON.stringify([def.tiles, def.buckets, def.tunnels ?? [], def.rods ?? []])}`;
   if (!force && sig === lastBoardSig) return;
   lastBoardSig = sig;
 
@@ -463,42 +519,68 @@ function renderBoard(force = false): void {
   grid.className = `grid ${sess ? 'view' : 'edit'}`;
   grid.style.gridTemplateColumns = `repeat(${cols}, 82px)`;
   let html = '';
-  let id = 0;
-  // bucket ids follow the order the core creates them: row-major over the buckets of the level
-  const idAt = new Map<string, number>();
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const tk = def.buckets[r][c]; if (tk && tk !== '.' && tk !== ' ') idAt.set(`${r},${c}`, id++); }
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const tile = def.tiles[r][c];
-      const tk = def.buckets[r][c];
       let cls = 'cell';
       let inner = '';
       if (tile === '.') cls += ' void';
       else if (tile === 'x') cls += ' wall';
-      const bid = idAt.get(`${r},${c}`);
-      if (tile === 'o' && bid !== undefined) {
-        const mystery = tk[0] === '?';
-        const col = parseInt(mystery ? tk.slice(1) : tk, 36);
-        if (g) {
-          const b = g.board.buckets[bid];
-          if (!b.gone) {
-            const hide = b.mystery && !b.revealed;
-            inner = `<div class="bucket ${hide ? 'hid' : ''}" style="background:${hide ? '#8aa3c8' : colorHex(col)}">${hide ? '?' : ''}</div>`;
-            if (open.has(bid)) cls += ' open';
-            if (bid === pulse) cls += ' pulse';
+      else if (tile === 't') {
+        // tunnel mouth: the colour that comes out next and how many buckets are left inside
+        const ti = tunnelAt(def, r, c);
+        const t = ti >= 0 ? def.tunnels![ti] : null;
+        const live = board && ti >= 0 ? board.tunnels[ti] : null;
+        const left = live ? live.queue.length : t ? t.queue.length : 0;
+        const next = live ? (live.queue.length ? board!.buckets[live.queue[0]].color : -1) : t && t.queue.length ? parseInt(t.queue[0], 36) : -1;
+        cls += ' mouth';
+        inner = `<div class="mouthbox dir-${t?.dir ?? 'u'}"><span class="arr">${DIR_ARROW[t?.dir ?? 'u']}</span>${next >= 0 ? `<i style="background:${colorHex(next)}"></i>` : '<i class="none"></i>'}<b>${left}</b></div>`;
+        if (!sess && t && t.queue.length) inner += `<div class="queue">${t.queue.map((q) => `<i style="background:${colorHex(parseInt(q, 36))}"></i>`).join('')}</div>`;
+      } else if (tile === 'o') {
+        let tk = def.buckets[r][c];
+        if (board) {
+          const id = board.occ[r * cols + c];
+          const b = id >= 0 ? board.buckets[id] : null;
+          if (b && !b.gone && !b.queued) {
+            inner = bucketHtml(b.color, { hidden: b.mystery && !b.revealed, frozen: b.frozen, key: b.key, lock: b.lock, locked: b.locked });
+            if (open.has(b.id)) cls += ' open';
+            if (b.id === pulse) cls += ' pulse';
           }
-        } else {
-          inner = `<div class="bucket ${mystery ? 'edithid' : ''}" style="background:${colorHex(col)}"></div>`;
+        } else if (isBucketTok(tk)) {
+          const p = tokInfo(tk);
+          inner = bucketHtml(p.color, { editHidden: p.mystery, frozen: p.frozen, key: p.key, lock: p.lock, locked: true });
         }
+        tk = '';
       }
-      html += `<button class="${cls}" data-r="${r}" data-c="${c}" ${sess ? '' : ''}>${inner}</button>`;
+      // a rod lies over its tiles until its front tile empties
+      const ri = rodAt(def, r, c);
+      if (ri >= 0 && (!board || !board.rods[ri].open)) {
+        const rod = def.rods![ri];
+        const head = rod.r === r && rod.c === c;
+        cls += ` rod rod-${rod.dir}${head ? ' rod-head' : ''}`;
+        inner += `<div class="rodbar">${head ? `<span>${DIR_ARROW[rod.dir]}</span>` : ''}</div>`;
+      }
+      html += `<button class="${cls}" data-r="${r}" data-c="${c}">${inner}</button>`;
     }
   }
   grid.innerHTML = html;
   $('legend').textContent = sess
     ? sess.mode === 'play' ? 'Bấm xô có viền sáng để đưa lên băng chuyền' : 'Đang tự giải — xô nhấp nháy là xô sắp được bấm'
-    : 'Ô xanh đậm là tường · Dấu ? là xô ẩn · Bấm ô để đặt';
+    : TOOL_HINT[tool];
 }
+
+const TOOL_HINT: Record<Tool, string> = {
+  bucket: 'Xô màu: bấm ô sàn để đặt xô với màu đang chọn',
+  wall: 'Tường: ô bị chặn, không đi qua được',
+  hidden: 'Xô ẩn (?): hiện màu khi có ô kề trống',
+  frozen: 'Xô băng: tan sau N lần có xô khác đầy và nổ trên băng chuyền',
+  key: 'Xô chìa: khi nó đầy và nổ thì mở mọi xô khóa cùng số cặp',
+  lock: 'Xô khóa: không bấm được tới khi xô chìa cùng số cặp đầy và nổ',
+  tunnel: 'Hầm: bấm ô trống kề ô sàn để đặt miệng hầm hướng vào ô sàn đó. Bấm lại miệng hầm để xoay hướng',
+  tunnelq: 'Xô trong hầm: bấm miệng hầm để thêm xô màu đang chọn vào hàng đợi (Xóa ô để bỏ xô cuối)',
+  rod: 'Thanh chắn: bấm ô ĐẦU thanh (chỗ có mũi tên). Ô phía trước đầu thanh phải có xô — bấm xô đó thì thanh trượt đi',
+  erase: 'Xóa ô: bỏ xô, thanh chắn, xô trong hầm / hầm, tường',
+};
 
 function renderBelt(): void {
   const g = sess?.game;
@@ -673,6 +755,12 @@ function stopGen(): void {
   syncAll();
 }
 
+function mechCounts(): Record<MechKey, number> {
+  const out = {} as Record<MechKey, number>;
+  for (const k of Object.keys(genMech) as MechKey[]) out[k] = genMech[k].on ? genMech[k].n : 0;
+  return out;
+}
+
 function startGen(): void {
   const en = cur();
   if (sess) return;
@@ -705,7 +793,8 @@ function startGen(): void {
       target.analysis = r.analysis ?? undefined;
       target.analysisKey = r.analysis ? levelKey(r.def, layer) : undefined;
       target.genHints = r.hints ?? [];
-      target.genNote = (r.matched ? '✓ ' : '⚠ ') + r.note + (carved ? ' Bàn đã được khoét thành hành lang (có thể thêm hàng).' : '') + (r.matched ? '' : ` (tag ${TAG_TEXT[tagAtStart]})`);
+      target.genHistory = [layoutSig(r.def), ...(target.genHistory ?? [])].slice(0, 16);
+      target.genNote = (r.matched ? '✓ ' : '⚠ ') + r.note + (carved ? ' Hình dạng bàn đã được chỉnh (thêm hàng cho miệng hầm hoặc khoét ô).' : '') + (r.matched ? '' : ` (tag ${TAG_TEXT[tagAtStart]})`);
       save();
     } else target.genNote = '⚠ Lỗi khi gen: ' + errorText;
     syncAll();
@@ -732,7 +821,7 @@ function startGen(): void {
         finish(pick);
       }
     };
-    const req: WorkerRequest = { kind: 'gen', key, def: en.def, opts: { tag: wantTag, layer, budgetMs: genSecs * 1000, seed: (seedBase + i * 7919) % 1_000_000_007 + 1, shape: allowShape, fill: fillPct / 100 } };
+    const req: WorkerRequest = { kind: 'gen', key, def: en.def, opts: { tag: wantTag, layer, budgetMs: genSecs * 1000, seed: (seedBase + i * 7919) % 1_000_000_007 + 1, shape: allowShape, fill: fillPct / 100, mech: mechCounts(), avoid: [layoutSig(en.def), ...(en.genHistory ?? [])] } };
     w.postMessage(req);
   }
   syncAll();
@@ -745,12 +834,17 @@ document.addEventListener('click', (ev) => {
   const en = cur();
   if (t.dataset.tag) { en.tag = t.dataset.tag as Tag; save(); renderConfig(); renderList(); lastResultSig = ''; renderResult(); return; }
   if (t.id === 'bGen') { if (gen.running) stopGen(); else startGen(); return; }
-  if (t.dataset.tool) { tool = t.dataset.tool as Tool; renderConfig(); return; }
+  if (t.dataset.tool) { tool = t.dataset.tool as Tool; renderConfig(); lastBoardSig = ''; renderBoard(true); return; }
+  if (t.dataset.dir) { toolOpt.dir = t.dataset.dir as Dir; renderConfig(); return; }
   if (t.dataset.color) { color = Number(t.dataset.color); renderConfig(); return; }
   if (t.dataset.lv) { selectLevel(Number(t.dataset.lv)); return; }
   if (t.dataset.st) {
     const d = Number(t.dataset.d);
     const k = t.dataset.st;
+    if (k === 'ofrozen') { toolOpt.frozen = Math.min(5, Math.max(1, toolOpt.frozen + d)); renderConfig(); return; }
+    if (k === 'opair') { toolOpt.pair = Math.min(9, Math.max(1, toolOpt.pair + d)); renderConfig(); return; }
+    if (k === 'osize') { toolOpt.rodSize = Math.min(4, Math.max(2, toolOpt.rodSize + d)); renderConfig(); return; }
+    if (k === 'gm') { const mk = t.dataset.k as MechKey; genMech[mk].n = Math.min(MECH_INFO[mk].max, Math.max(1, genMech[mk].n + d)); save(); renderConfig(); return; }
     if (k === 'colors') { maxColors = Math.min(SAND_COLORS.length, Math.max(2, maxColors + d)); save(); renderConfig(); return; }
     if (k === 'fill') { fillPct = Math.min(100, Math.max(30, fillPct + d * 10)); save(); renderConfig(); return; }
     if (k === 'gen') { genSecs = Math.min(180, Math.max(15, genSecs + d * 15)); save(); renderConfig(); return; }
@@ -794,10 +888,10 @@ document.addEventListener('click', (ev) => {
     const r = Number(cell.dataset.r), c = Number(cell.dataset.c);
     if (sess) {
       if (sess.mode !== 'play' || sess.game.status !== 'playing') return;
-      const id = bucketIdAt(en.def, r, c);
-      if (id !== null) sess.game.tap(id);
+      const id = sess.game.board.occ[r * en.def.tiles[0].length + c];
+      if (id >= 0) sess.game.tap(id);
     } else {
-      applyTool(en.def, r, c, tool, color);
+      applyTool(en.def, r, c, tool, color, toolOpt);
       edited();
     }
   }
@@ -811,52 +905,65 @@ function download(name: string, text: string): void {
   window.setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 
-/** Writes the whole level list into the game's source (level-data.ts, art-data.ts). */
+/**
+ * Moves the levels into the game's source without rewriting what is there: new levels are appended to level-data.ts, a level
+ * that was exported before (or a level of the game that was edited) replaces its own block, pictures of uploaded images are
+ * appended to art-data.ts. Choose the game's src/core folder; if the browser cannot write there, the new blocks are downloaded.
+ */
 async function exportToGame(): Promise<void> {
   const note = (t: string) => { $('exportNote').textContent = t; };
   if (sess || gen.running) { note('Dừng chơi thử / gen trước khi xuất.'); return; }
   const bad = entries.map((e, i) => ({ i, p: validate(e.def, layer) })).filter((x) => x.p.length > 0);
   if (bad.length) { note(`Màn ${bad.map((x) => pad(x.i + 1)).join(', ')} còn lỗi (${bad[0].p[0]}) — sửa xong mới xuất được.`); return; }
-  const files = buildFiles(entries.map((e) => ({ def: e.def, tag: e.tag, builtin: e.builtin })), ART_SOURCES.slice(0, BUILTIN_ARTS));
-  const ask = `Ghi ${files.levels} màn vào game (level-data.ts${files.newArts ? ` + ${files.newArts} tranh mới trong art-data.ts` : ''}).
-
-Danh sách màn hiện có trong game sẽ được thay bằng danh sách này, đúng thứ tự trong tool.
-Bước sau: chọn thư mục src/core của game.`;
-  if (!window.confirm(ask)) return;
-  type Dir = { getFileHandle(n: string): Promise<{ createWritable(): Promise<{ write(d: string): Promise<void>; close(): Promise<void> }> }> };
+  const list = entries.map((e) => {
+    const orig = e.builtin ? LEVELS.find((l) => `builtin-${l.id}` === e.id) : undefined;
+    return { def: e.def, tag: e.tag, builtin: e.builtin, gameId: e.gameId, edited: e.builtin ? !orig || JSON.stringify(orig) !== JSON.stringify(e.def) : true };
+  });
+  const done = (m: MergeResult) => {
+    m.ids.forEach((id, i) => { if (!entries[i].builtin) entries[i].gameId = id; });
+    save();
+  };
+  type FileH = { getFile(): Promise<{ text(): Promise<string> }>; createWritable(): Promise<{ write(d: string): Promise<void>; close(): Promise<void> }> };
+  type Dir = { getFileHandle(n: string): Promise<FileH> };
   const picker = (window as unknown as { showDirectoryPicker?: (o: { mode: string }) => Promise<Dir> }).showDirectoryPicker;
   if (picker) {
     try {
       const dir = await picker.call(window, { mode: 'readwrite' });
-      for (const [name, text] of [['level-data.ts', files.levelData], ['art-data.ts', files.artData]]) {
-        const w = await (await dir.getFileHandle(name)).createWritable();
-        await w.write(text);
-        await w.close();
-      }
-      note(`✓ Đã ghi ${files.levels} màn vào game${files.newArts ? ` (+${files.newArts} tranh mới)` : ''}. Chạy lại game / npm run build để thấy.`);
+      const lvFile = await dir.getFileHandle('level-data.ts');
+      const artFile = await dir.getFileHandle('art-data.ts');
+      const m = mergeIntoGame(await (await lvFile.getFile()).text(), await (await artFile.getFile()).text(), list);
+      if (!m.added && !m.replaced) { note('Không có gì để ghi: các màn có sẵn của game chưa sửa và chưa có màn nào của bạn.'); return; }
+      const ask = `Ghi vào game:\n• ${m.added} màn mới (thêm vào cuối danh sách)\n• ${m.replaced} màn được cập nhật\n• ${m.newArts} tranh mới\n\nCác màn khác giữ nguyên.`;
+      if (!window.confirm(ask)) return;
+      const w = await lvFile.createWritable();
+      await w.write(m.levelData);
+      await w.close();
+      if (m.newArts) { const wa = await artFile.createWritable(); await wa.write(m.artData); await wa.close(); }
+      done(m);
+      note(`✓ Đã ghi vào game: ${m.added} màn mới, ${m.replaced} màn cập nhật, ${m.newArts} tranh mới. Chạy lại game / npm run build để thấy.`);
       return;
     } catch (err) {
       const name = err instanceof DOMException ? err.name : '';
       if (name === 'AbortError') return;
-      if (name === 'NotFoundError') { note('Thư mục đó không có level-data.ts — hãy chọn đúng thư mục src/core của game.'); return; }
-      /* anything else: fall back to downloading the files */
+      if (name === 'NotFoundError') { note('Thư mục đó không có level-data.ts / art-data.ts — hãy chọn đúng thư mục src/core của game.'); return; }
+      /* anything else: fall back to downloading the blocks */
     }
   }
-  download('level-data.ts', files.levelData);
-  download('art-data.ts', files.artData);
-  note('Trình duyệt không cho ghi thẳng: đã tải 2 file về. Chép đè vào src/core của game.');
+  const fakeLevels = 'export const LEVEL_DATA: LevelDef[] = [\n' + LEVELS.map((l) => `  {\n    id: ${l.id},\n  },`).join('\n') + '\n];\n';
+  const fakeArts = 'export const ART_SOURCES: ArtSource[] = [\n' + ART_SOURCES.slice(0, BUILTIN_ARTS).map((a) => `  { name: ${JSON.stringify(a.name)} },`).join('\n') + '\n];\n';
+  const m = mergeIntoGame(fakeLevels, fakeArts, list);
+  if (!m.added && !m.replaced) { note('Không có gì để xuất: các màn có sẵn của game chưa sửa và chưa có màn nào của bạn.'); return; }
+  download('new-levels.txt', '// Dán các khối này vào cuối mảng LEVEL_DATA trong src/core/level-data.ts (khối trùng id thì thay khối cũ).\n' + m.levelBlocks + '\n');
+  if (m.newArts) download('new-arts.txt', '// Dán các khối này vào cuối mảng ART_SOURCES trong src/core/art-data.ts.\n' + m.artBlocks + '\n');
+  done(m);
+  note(`Trình duyệt không cho ghi thẳng: đã tải ${m.newArts ? '2 file' : '1 file'} (${m.added} màn mới, ${m.replaced} cập nhật). Dán vào src/core của game.`);
 }
 
-function bucketIdAt(def: DesignLevel, r: number, c: number): number | null {
-  let id = 0;
-  for (let rr = 0; rr < def.tiles.length; rr++)
-    for (let cc = 0; cc < def.tiles[0].length; cc++) {
-      const tk = def.buckets[rr][cc];
-      if (tk && tk !== '.' && tk !== ' ') { if (rr === r && cc === c) return id; id++; }
-    }
-  return null;
-}
 
+document.addEventListener('change', (e) => {
+  const el = e.target as HTMLInputElement;
+  if (el.dataset?.gm) { genMech[el.dataset.gm as MechKey].on = el.checked; save(); renderConfig(); }
+});
 $<HTMLSelectElement>('themeSel').addEventListener('change', (e) => { cur().def.theme = (e.target as HTMLSelectElement).value; edited(); });
 $<HTMLInputElement>('chkAuto').addEventListener('change', (e) => { autoGen = (e.target as HTMLInputElement).checked; save(); });
 $<HTMLInputElement>('chkShape').addEventListener('change', (e) => { allowShape = (e.target as HTMLInputElement).checked; save(); });

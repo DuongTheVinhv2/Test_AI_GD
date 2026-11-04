@@ -23,7 +23,16 @@ export function isSettled(g: Game): boolean {
 }
 
 export function settle(g: Game): void {
-  for (let i = 0; i < SETTLE_MAX_TICKS && !isSettled(g); i++) g.step();
+  for (let round = 0; round < 8; round++) {
+    for (let i = 0; i < SETTLE_MAX_TICKS && !isSettled(g); i++) g.step();
+    // The game thaws every frozen bucket when nothing is left to wait for (a countdown never loses a level on its own).
+    // Settled here means exactly that, so apply the rule now instead of reporting a stuck level.
+    if (g.status === 'playing' && g.board.hasFrozen() && !(g.slotsUsed < g.slots && g.openBuckets().length > 0)) {
+      g.board.thawAll();
+      continue;
+    }
+    break;
+  }
 }
 
 export type Verdict = 'won' | 'stuck' | 'open';
@@ -44,7 +53,7 @@ export function fingerprint(g: Game): string {
     h1 = Math.imul(h1 ^ v, 16777619);
     h2 = (Math.imul(h2, 33) + v) | 0;
   }
-  const bs = g.board.buckets.map((b) => (b.gone ? 'x' : b.revealed ? 'r' : 'h')).join('');
+  const bs = g.board.buckets.map((b) => (b.gone ? 'x' : b.queued ? 'q' : b.revealed ? 'r' : 'h') + (b.frozen > 0 ? `f${b.frozen}` : '') + (b.locked ? 'L' : '')).join('') + g.board.rods.map((r) => (r.open ? 'O' : 'C')).join('');
   const belt = g.belt.filter((b) => b.state !== 'pop').map((b) => `${b.id}:${b.fill}`).sort().join(',');
   return `${h1}.${h2}|${bs}|${belt}`;
 }

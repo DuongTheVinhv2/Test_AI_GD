@@ -34,6 +34,16 @@ export const LANE = {
 
 export const DEFAULT_SLOTS = 5;
 
+/**
+ * Final stretch: once this many buckets (or fewer) are left to fill, the whole run is pushed to this speed whatever the
+ * player picked with the x1/x2 button, so the end of a level is not a slow wait for the last grains.
+ * Levels with no more buckets than this are left alone (a level of five buckets would be x3 from the first tap).
+ */
+export const FINAL_STRETCH = { buckets: 5, speed: 3 };
+
+/** Width of one board tile in sand-window widths (BOARD.cell / WINDOW.size in render/layout3d.ts), so the core can tell where a tile is over the belt. */
+export const BOARD_CELL_IN_WINDOWS = 2.05 / 9.0;
+
 /** Coins per cleared level, as in the reference footage. */
 export const LEVEL_REWARD = 25;
 export const START_COINS = 0;

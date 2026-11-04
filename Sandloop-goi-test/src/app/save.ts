@@ -1,5 +1,7 @@
 import { START_COINS } from '../core/config';
+import { BOOSTER_KEYS, HEART_MAX, type BoosterKey } from '../core/economy';
 import { LEVELS } from '../core/levels';
+import { freshHearts, type HeartState } from './hearts';
 
 export interface LevelRecord {
   attempts: number;
@@ -37,7 +39,14 @@ export interface SaveData {
   log: AttemptLog[];
   finished: boolean;
   /** one-time hints already shown */
-  tips: { mystery: boolean; tap: boolean; blocked: boolean; full: boolean };
+  tips: { mystery: boolean; tap: boolean; blocked: boolean; full: boolean; tunnel: boolean; frozen: boolean; rod: boolean; key: boolean };
+  /** boosters owned, and whether the free ones of that booster were already handed out */
+  boosters: Record<BoosterKey, number>;
+  boosterGift: Record<BoosterKey, boolean>;
+  /** lives, see hearts.ts */
+  hearts: HeartState;
+  /** daily gift: day of the 7-day cycle the next claim gives (0-based), and the local date (YYYY-MM-DD) of the last claim */
+  daily: { next: number; last: string };
   /** Level whose attempt was started (first tap) but not finished: a reload or closed tab counts as an attempt. 0 = none. */
   pending: number;
 }
@@ -54,7 +63,11 @@ function fresh(): SaveData {
     settings: { sound: true, music: true, haptics: true, colorAssist: false },
     log: [],
     finished: false,
-    tips: { mystery: false, tap: false, blocked: false, full: false },
+    tips: { mystery: false, tap: false, blocked: false, full: false, tunnel: false, frozen: false, rod: false, key: false },
+    boosters: { handPick: 0, sandPull: 0, shuffle: 0 },
+    boosterGift: { handPick: false, sandPull: false, shuffle: false },
+    hearts: freshHearts(),
+    daily: { next: 0, last: '' },
     pending: 0,
   };
 }
@@ -78,6 +91,20 @@ function sanitize(raw: unknown): SaveData | null {
   for (const k of Object.keys(f.settings) as Array<keyof SaveData['settings']>) f.settings[k] = bool(st[k], f.settings[k]);
   const tp = (o.tips ?? {}) as Record<string, unknown>;
   for (const k of Object.keys(f.tips) as Array<keyof SaveData['tips']>) f.tips[k] = bool(tp[k], f.tips[k]);
+  const bs = (o.boosters ?? {}) as Record<string, unknown>;
+  const bg = (o.boosterGift ?? {}) as Record<string, unknown>;
+  for (const k of BOOSTER_KEYS) {
+    f.boosters[k] = int(bs[k], 0, 999, 0);
+    f.boosterGift[k] = bool(bg[k], false);
+  }
+  const hr = (o.hearts ?? {}) as Record<string, unknown>;
+  f.hearts = {
+    count: int(hr.count, 0, HEART_MAX, HEART_MAX),
+    since: int(hr.since, 0, 8.64e15, Date.now()),
+    infiniteUntil: int(hr.infiniteUntil, 0, 8.64e15, 0),
+  };
+  const dl = (o.daily ?? {}) as Record<string, unknown>;
+  f.daily = { next: int(dl.next, 0, 6, 0), last: typeof dl.last === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dl.last) ? dl.last : '' };
   if (o.levels && typeof o.levels === 'object') {
     for (const [key, val] of Object.entries(o.levels as Record<string, unknown>)) {
       const id = Number(key);

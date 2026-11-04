@@ -191,6 +191,40 @@ export class SandSim {
     return taken;
   }
 
+  /**
+   * Booster: remove up to `max` grains of `color` from anywhere in the picture, not only from the floor row. Works in
+   * passes over the columns, taking the lowest grain of the colour in each, so the sand disappears evenly across the
+   * picture and layers that were blocking a bucket get thinner. Returns how many were taken; x positions go to `out`.
+   */
+  take(color: number, max: number, out?: number[]): number {
+    const id = color + 1;
+    const { w, h, cells } = this;
+    let taken = 0;
+    while (taken < max) {
+      let pass = 0;
+      for (let x = 0; x < w && taken < max; x++) {
+        for (let y = 0; y < h; y++) {
+          const i = y * w + x;
+          if (cells[i] === id) {
+            cells[i] = 0;
+            this.counts[color]--;
+            this.total--;
+            taken++;
+            pass++;
+            out?.push(x);
+            break;
+          }
+        }
+      }
+      if (!pass) break;
+    }
+    if (taken) {
+      this.version++;
+      this.quiet = 0;
+    }
+    return taken;
+  }
+
   /** Number of columns where each colour is within reach of a bucket. */
   exposure(into = new Int32Array(COLOR_COUNT)): Int32Array {
     into.fill(0);

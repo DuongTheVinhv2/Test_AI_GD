@@ -14,7 +14,9 @@ export class AudioEngine {
   private sfxBus!: GainNode;
   private musicBus!: GainNode;
   private reverb!: ConvolverNode;
+  /** Reverb sends are gated per category, so muting Sound/Music also silences the reverb tail. */
   private reverbSend!: GainNode;
+  private musicReverbSend!: GainNode;
   private noiseBuf!: AudioBuffer;
   private crackleBuf!: AudioBuffer;
   private pourGain!: GainNode;
@@ -52,9 +54,9 @@ export class AudioEngine {
     comp.release.value = 0.2;
     this.master.connect(comp).connect(ctx.destination);
     this.sfxBus = ctx.createGain();
-    this.sfxBus.gain.value = 0.9;
+    this.sfxBus.gain.value = this.sound ? 0.9 : 0;
     this.musicBus = ctx.createGain();
-    this.musicBus.gain.value = 0.34;
+    this.musicBus.gain.value = this.music ? 0.34 : 0;
     this.sfxBus.connect(this.master);
     this.musicBus.connect(this.master);
 
@@ -68,8 +70,11 @@ export class AudioEngine {
     }
     this.reverb.buffer = imp;
     this.reverbSend = ctx.createGain();
-    this.reverbSend.gain.value = 0.22;
+    this.reverbSend.gain.value = this.sound ? 0.22 : 0;
     this.reverbSend.connect(this.reverb);
+    this.musicReverbSend = ctx.createGain();
+    this.musicReverbSend.gain.value = this.music ? 0.22 : 0;
+    this.musicReverbSend.connect(this.reverb);
     this.reverb.connect(this.master);
 
     // Noise buffers.
@@ -111,13 +116,16 @@ export class AudioEngine {
 
   setSound(on: boolean): void {
     this.sound = on;
-    if (this.ctx) this.sfxBus.gain.setTargetAtTime(on ? 0.9 : 0, this.ctx.currentTime, 0.05);
+    if (!this.ctx) return;
+    this.sfxBus.gain.setTargetAtTime(on ? 0.9 : 0, this.ctx.currentTime, 0.05);
+    this.reverbSend.gain.setTargetAtTime(on ? 0.22 : 0, this.ctx.currentTime, 0.05);
   }
 
   setMusic(on: boolean): void {
     this.music = on;
     if (!this.ctx) return;
     this.musicBus.gain.setTargetAtTime(on ? 0.34 : 0, this.ctx.currentTime, 0.2);
+    this.musicReverbSend.gain.setTargetAtTime(on ? 0.22 : 0, this.ctx.currentTime, 0.2);
     // Off really stops the scheduler, so nothing (not even the reverb send) is generated while music is off.
     if (on) this.startMusic();
     else this.stopMusic();
@@ -346,7 +354,7 @@ export class AudioEngine {
       if (Math.random() < 0.55) {
         const m = 72 + PENTA[Math.floor(Math.random() * 5)] + (Math.random() < 0.25 ? 12 : 0);
         this.tone(midiToHz(m), 'sine', t + (Math.random() < 0.3 ? beat / 2 : 0), 0.003, 0.07, 0.5, this.musicBus);
-        this.tone(midiToHz(m) * 2, 'sine', t, 0.003, 0.02, 0.2, this.reverbSend);
+        this.tone(midiToHz(m) * 2, 'sine', t, 0.003, 0.02, 0.2, this.musicReverbSend);
       }
       this.nextBeat += beat;
       this.beatIndex++;
@@ -361,7 +369,7 @@ export class AudioEngine {
       this.lpNode.type = 'lowpass';
       this.lpNode.frequency.value = 1100;
       this.lpNode.connect(this.musicBus);
-      this.lpNode.connect(this.reverbSend);
+      this.lpNode.connect(this.musicReverbSend);
     }
     return this.lpNode;
   }

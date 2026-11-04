@@ -1,7 +1,7 @@
 import type { LevelDef } from './levels';
 
 /**
- * The ten levels: board tiles, buckets and the picture each level uses.
+ * The fifteen levels: board tiles, buckets and the picture each level uses.
  * Colour ids: 0 Blush, 1 Poppy, 2 Sunbeam, 3 Tangerine, 4 Amber, 5 Maroon, 6 Lime, 7 Forest, 8 Cobalt, 9 Aqua, 10 Cream.
  * A bucket token is the colour id in base 36; '?' in front hides the colour until a neighbouring tile is empty.
  */
@@ -161,6 +161,94 @@ export const LEVEL_DATA: LevelDef[] = [
       ['.', '?4', '?8', 'a', '.'],
       ['.', '.', '4', '.', '.'],
       ['8', '?4', '8', '4', '8'],
+    ],
+  },
+  {
+    id: 11,
+    name: 'Apple',
+    art: 10,
+    theme: 'garden',
+    fillSeconds: 2.6,
+    slots: 5,
+    // Tunnel intro: two tunnels at the bottom feed the tiles above them whenever those are empty.
+    tiles: ['ooooo', 'ooooo', 'ooooo', '.t.t.'],
+    tunnels: [
+      { r: 3, c: 1, dir: 'u', queue: ['7', '9'] },
+      { r: 3, c: 3, dir: 'u', queue: ['1', 'a'] },
+    ],
+    buckets: [
+      ['7', '7', '5', 'a', '9'],
+      ['.', '1', '.', '5', '.'],
+      ['9', 'a', 'a', '9', '1'],
+      ['.', '.', '.', '.', '.'],
+    ],
+  },
+  {
+    id: 12,
+    name: 'Mushroom',
+    art: 11,
+    theme: 'lagoon',
+    fillSeconds: 2.6,
+    slots: 5,
+    // Frozen intro: the red cap bucket and one blue one stay shut until enough other buckets have popped.
+    tiles: ['ooooo', 'ooooo', 'ooooo'],
+    buckets: [
+      ['4', 'F2:8', '4', '1', '8'],
+      ['8', '7', 'a', '7', '8'],
+      ['1', 'F3:8', 'a', '8', '1'],
+    ],
+  },
+  {
+    id: 13,
+    name: 'Sunflower',
+    art: 12,
+    theme: 'meadow',
+    fillSeconds: 2.6,
+    slots: 5,
+    // Gate bar intro: the bar over row 1 slides away once the bucket in front of its arrow is tapped.
+    tiles: ['ooooo', 'ooooo', 'ooooo', 'ooooo'],
+    rods: [{ r: 1, c: 3, dir: 'r', size: 3 }],
+    buckets: [
+      ['2', '7', '9', '9', '6'],
+      ['9', '.', '.', '.', '2'],
+      ['9', '5', '5', '7', '2'],
+      ['9', '2', '.', '6', '.'],
+    ],
+  },
+  {
+    id: 14,
+    name: 'Rocket',
+    art: 13,
+    theme: 'dusk',
+    fillSeconds: 2.6,
+    slots: 5,
+    // Key and lock intro: a lock opens when the key bucket of its pair has filled up and popped.
+    tiles: ['ooooo', 'ooooo', 'ooooo', 'ooooo'],
+    buckets: [
+      ['a', '9', '8', 'K1:8', 'a'],
+      ['L1:a', '8', '1', '8', '1'],
+      ['3', 'L2:8', 'K2:8', '3', '1'],
+      ['.', 'a', '3', '.', '.'],
+    ],
+  },
+  {
+    id: 15,
+    name: 'Castle',
+    art: 14,
+    theme: 'garden',
+    fillSeconds: 2.6,
+    slots: 5,
+    hard: true,
+    // Everything together: a tunnel, a frozen bucket, a key and its lock, a gate bar and a mystery bucket.
+    tiles: ['ooooo', 'ooooo', 'ooooo', 'ooooo', '..t..'],
+    tunnels: [{ r: 4, c: 2, dir: 'u', queue: ['9', '4'] }],
+    rods: [{ r: 2, c: 2, dir: 'r', size: 2 }],
+    buckets: [
+      ['6', '1', '5', 'K1:4', '2'],
+      ['2', 'F2:9', '?6', '4', '4'],
+      ['L1:6', '.', '.', '9', '4'],
+      ['5', '9', '1', '?2', '9'],
+      ['.', '.', '.', '.', '.'],
     ],
   },
 ];
